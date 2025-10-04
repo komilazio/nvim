@@ -30,7 +30,6 @@ vim.opt.winborder = "rounded"
 vim.g.termguicolors = 1
 vim.cmd("set list")
 -- vim.cmd("set listchars=space:.")
--- vim.g.background = "light"
 
 ---------KEYMAPS---------
 vim.keymap.set("n", "j", "jzz")
@@ -109,14 +108,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- vim.api.nvim_create_user_command("T", function(opts)
---   -- Open horizontal split with height 20
---   vim.cmd("botright 20split | terminal " .. opts.args)
--- end, {
--- nargs = "*",      -- allow any number of arguments
--- complete = "shellcmd", -- shell command completion
--- })
-
 -- FILE MANAGER (NETRW)
 -- ==============================================================
 local last_buffer = nil
@@ -144,8 +135,6 @@ vim.lsp.enable({
     'ols',
     'elixirls',
     'gleamls',
-    -- 'zls',
-    --'yamlls'
 })
 
 vim.diagnostic.config({ virtual_text = true })
@@ -155,12 +144,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition, { buffer = args.buf })
     vim.keymap.set('n', '<leader>gD', vim.lsp.buf.declaration, { buffer = args.buf })
     vim.keymap.set('n', '<leader>gi', vim.lsp.buf.implementation, { buffer = args.buf })
-    -- vim.keymap.set('n', '<leader>ge', vim.lsp.diagnostic.show_line_diagnostics, { buffer = args.buf })
     vim.keymap.set('n', '<C-i>', vim.lsp.buf.signature_help, { buffer = args.buf })
   end,
 })
-
--- vim.api.nvim_set_hl(0, "Whitespace", { fg = "#312D2D" })
--- vim.api.nvim_set_hl(0, "NonText", { fg = "#312D2D" })
 
 require("config.lazy")
