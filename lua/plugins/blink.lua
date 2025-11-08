@@ -4,9 +4,11 @@ return {
     version = '1.*',
     opts = {
         keymap = {
-            preset = 'enter',
-            ['<S-Tab>'] = { 'select_prev', 'fallback' },
-            ['<Tab>'] = { 'select_next', 'fallback' },
+            preset = 'default',
+            -- preset = 'enter',
+            ['<C-k>'] = { 'select_prev', 'fallback' },
+            ['<C-j>'] = { 'select_next', 'fallback' },
+            ['<Tab>'] = { 'accept', 'fallback' },
         },
 
         appearance = {

@@ -83,7 +83,7 @@ return {
       function()
         return '▊'
       end,
-      color = { fg = colors.blue }, -- Sets highlighting of component
+      color = { fg = colors.orange }, -- Sets highlighting of component
       padding = { left = 0, right = 1 }, -- We don't need space before this
     }
 
@@ -130,7 +130,7 @@ return {
     ins_left {
       'filename',
       cond = conditions.buffer_not_empty,
-      color = { fg = colors.magenta, gui = 'bold' },
+      color = { fg = colors.fg, gui = 'none' },
     }
 
     ins_left { 'location', color = { fg = "#09DF85", gui = 'bold' }}
@@ -214,7 +214,7 @@ return {
       function()
         return '▊'
       end,
-      color = { fg = colors.blue },
+      color = { fg = colors.orange},
       padding = { left = 1 },
     }
     -- Now don't forget to initialize lualine
