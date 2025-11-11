@@ -36,9 +36,17 @@ vim.cmd("set listchars+=tab:..,lead:.")
 -- vim.keymap.set("n", "k", "kzz")
 vim.keymap.set("n", "<Esc>", "<cmd>nohl<CR>")
 vim.keymap.set("n", ";", ":")
-vim.keymap.set("n", "<C-k>", "<cmd>only<CR>", { noremap = true, silent = true })
+-- make the buffer to occupy the entire window
+vim.keymap.set("n", "<leader>k", "<cmd>only<CR>", { noremap = true, silent = true })
+-- kill that current buffer
+vim.keymap.set("n", "<C-k>", "<cmd>bdelete!<CR>", { noremap = true, silent = true })
 vim.keymap.set("i", "jk", "<Esc>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>h", ":cd %:h<CR>", { noremap = true})
+
+-- Set Compiler
+-- vim.keymap.set("n", "<C-c>", ":set mp=", { noremap = true})
+-- Run Compiler
+-- vim.keymap.set("n", "<leader>r", ":make<CR>", { noremap = true, silent=true})
 
 -- Tabs
 vim.keymap.set("n", "<leader>tn", "<cmd>tabnew<CR>", { silent = true, noremap = true})
@@ -100,13 +108,44 @@ vim.keymap.set("n", "<C-g>", "<cmd>FzfLua grep<CR>", { noremap = true, silent = 
 -- GREP WORD IN PROJECT
 vim.keymap.set("n", "<C-l>", "<cmd>FzfLua grep_project<CR>", { noremap = true, silent = true })
 
--- Experimental
-vim.keymap.set("n", "<C-t>", ":!cd && ", { noremap = true })
+-- Run programs
+vim.keymap.set("n", "<leader>r", ":T ", { noremap = true })
 
 -- save file write to a root owned file
 vim.api.nvim_create_user_command("W", function()
     vim.cmd("SudaWrite")
 end, {})
+
+-- Experimental
+vim.api.nvim_create_user_command("T", function(opts)
+    local cmd = opts.args ~= "" and opts.args or os.getenv("SHELL") or "bash"
+    vim.cmd("belowright split | resize 20 | terminal " .. cmd)
+end, {
+nargs = "*",
+desc = "Open terminal below and run command",
+})
+
+-- vim.api.nvim_create_user_command("T", function(opts)
+--   -- Determine what command to run
+--   local cmd
+--   if opts.args == "make" then
+--     -- Get the current 'makeprg' setting
+--     cmd = vim.api.nvim_get_option_value("makeprg", { scope = "local" })
+--   else
+--     cmd = opts.args
+--   end
+--
+--   -- Default to shell if no args
+--   if cmd == "" then
+--     cmd = os.getenv("SHELL") or "bash"
+--   end
+--
+--   -- Open terminal split below and run command
+--   vim.cmd("belowright split | resize 20 | terminal " .. cmd)
+-- end, {
+--   nargs = "*",
+--   desc = "Open terminal below and run command (use :T make for makeprg)",
+-- })
 
 -- Highlight text for yanking
 vim.api.nvim_create_autocmd("TextYankPost", {
