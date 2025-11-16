@@ -43,10 +43,7 @@ vim.g.neovide_scroll_animation_length = 0.1
 vim.g.neovide_cursor_vfx_mode = "railgun"
 vim.g.neovide_cursor_hack = true
 vim.g.neovide_hide_mouse_when_typing = true
-vim.g.neovide_cursor_vfx_mode = true
-vim.cmd([[
-" highlight Cursor gui=NONE guifg=bg guibg=fg
-]])
+-- vim.g.neovide_cursor_vfx_mode = true
 
 -- Use Ctrl+V to paste from system clipboard in insert and normal mode
 vim.keymap.set('i', '<C-p>', '<C-r>+', { noremap = true, silent = true })
