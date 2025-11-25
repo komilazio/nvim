@@ -1,10 +1,9 @@
 return {
-  "ficcdaf/ashen.nvim",
-  tag = "*",
-  lazy = false,
-  priority = 1000,
-  opts = {},
-  config = function()
-      vim.cmd("colorscheme ashen")
-  end
+    "uhs-robert/oasis.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+        require("oasis").setup()      -- (see Configuration below for all customization options)
+        vim.cmd.colorscheme("oasis-abyss")  -- After setup, apply theme (or a any style like "oasis-night")
+    end
 }

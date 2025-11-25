@@ -32,18 +32,18 @@ vim.cmd("set list")
 vim.cmd("set listchars+=tab:..,lead:.")
 
 ---------Neovide Stuffs--------------
-vim.o.guifont = "Hurmit Nerd Font Light:h11"
+-- vim.o.guifont = "MartianMono Nerd Font Propo:h12"
+vim.o.guifont = "Hurmit Nerd Font:h11"
 if vim.g.neovide == true then
     vim.api.nvim_set_keymap("n", "<C-=>", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1<CR>", { silent = true })
     vim.api.nvim_set_keymap("n", "<C-->", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1<CR>", { silent = true })
     vim.api.nvim_set_keymap("n", "<C-0>", ":lua vim.g.neovide_scale_factor = 1<CR>", { silent = true })
 end
 vim.g.neovide_cursor_animation_length = 0.0
-vim.g.neovide_scroll_animation_length = 0.1
+vim.g.neovide_scroll_animation_length = 0.0
 vim.g.neovide_cursor_vfx_mode = "railgun"
 vim.g.neovide_cursor_hack = true
 vim.g.neovide_hide_mouse_when_typing = true
--- vim.g.neovide_cursor_vfx_mode = true
 
 -- Use Ctrl+V to paste from system clipboard in insert and normal mode
 vim.keymap.set('i', '<C-p>', '<C-r>+', { noremap = true, silent = true })
@@ -110,6 +110,11 @@ end, { desc="Find files from home directory", noremap = true, silent = true})
 -- Goto a Directory
 vim.keymap.set("n", "<C-f>", ":find ", {desc = "Goto a particular directory", noremap = true})
 
+-- terminal
+
+vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], { noremap = true, silent = true})
+vim.keymap.set('t', "<CSPACE>", "<cmd>terminal<CR>", { noremap = true, silent = true})
+
 -- Find Buffers
 vim.keymap.set("n", "<C-b>", "<cmd>FzfLua buffers<CR>", { noremap = true, silent = true })
 
@@ -117,10 +122,11 @@ vim.keymap.set("n", "<C-b>", "<cmd>FzfLua buffers<CR>", { noremap = true, silent
 vim.keymap.set("n", "<C-g>", "<cmd>FzfLua grep<CR>", { noremap = true, silent = true })
 
 -- GREP WORD IN PROJECT
-vim.keymap.set("n", "<C-l>", "<cmd>FzfLua grep_project<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>l", "<cmd>FzfLua grep_project<CR>", { noremap = true, silent = true })
 
 -- Run programs
-vim.keymap.set("n", "<leader>r", ":Command ", { noremap = true })
+-- vim.keymap.set("n", "<leader>r", ":Command ", { noremap = true })
+vim.keymap.set("n", "<leader>r", ":term ", { noremap = true })
 
 -- save file write to a root owned file
 vim.api.nvim_create_user_command("W", function()
@@ -172,7 +178,12 @@ vim.lsp.enable({
     'gleamls',
 })
 
+
 vim.diagnostic.config({ virtual_text = true })
+vim.keymap.set("n", "<leader>m", function()
+    vim.diagnostic.open_float(nil, { focus = false }) 
+    end, {desc = "View Diagnostics Error", 
+noremap = true})
 
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(args)
@@ -185,15 +196,20 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 require("config.lazy")
 
-vim.api.nvim_set_hl(0, "Whitespace", { fg = "#1F1E1E" })
+-- Personal theme settings
+vim.api.nvim_set_hl(0, "Whitespace",   { fg = "#1F1E1E" })
+vim.api.nvim_set_hl(0, "Normal",       { bg = "#03271B" })
+vim.api.nvim_set_hl(0, "NormalFloat",  { bg = "#03271B" })
+vim.api.nvim_set_hl(0, "signColumn",   { bg = "#03271B" })
+vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#E9FF81" })
+vim.api.nvim_set_hl(0, "Comment",      { fg = "#73909E" })
 
 -- Mini_Statusline
-vim.api.nvim_set_hl(0, "StatusLine", { bg = "#121212" })
-vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "#121212" })
-vim.api.nvim_set_hl(0, "MiniStatuslineModeNormal", { bg = "#6F2929" })
-vim.api.nvim_set_hl(0, "MiniStatuslineModeInsert", { bg = "#1E6F54"})
-vim.api.nvim_set_hl(0, "MiniStatuslineModeVisual", { bg = "#C4693D"})
+vim.api.nvim_set_hl(0, "StatusLine",                { bg = "none" })
 vim.api.nvim_set_hl(0, "MiniStatuslineModeCommand", { bg = "#223A70"})
-vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { bg = "#212121"})
-vim.api.nvim_set_hl(0, "MiniStatuslineFileinfo", { bg = "#212121"})
-
+-- vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "#000000" })
+-- vim.api.nvim_set_hl(0, "MiniStatuslineModeNormal", { bg = "#6F2929" })
+-- vim.api.nvim_set_hl(0, "MiniStatuslineModeInsert", { bg = "#1E6F54"})
+-- vim.api.nvim_set_hl(0, "MiniStatuslineModeVisual", { bg = "#C4693D"})
+-- vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { bg = "#7788AA"})
+-- vim.api.nvim_set_hl(0, "MiniStatuslineFileinfo", { bg = "#abab77"})
