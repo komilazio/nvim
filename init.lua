@@ -48,7 +48,7 @@ vim.g.neovide_hide_mouse_when_typing = true
 -- Use Ctrl+V to paste from system clipboard in insert and normal mode
 vim.keymap.set('i', '<C-p>', '<C-r>+', { noremap = true, silent = true })
 vim.keymap.set('v', '<C-p>', '<C-r>+', { noremap = true, silent = true })
-vim.keymap.set('n', '<C-p>', '"+p', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-p>', '"+p',    { noremap = true, silent = true })
 vim.keymap.set('c', '<C-p>', '<C-r>+', { noremap = true }) -- in command mode
 --------------------------------------------------------------------------
 
@@ -61,13 +61,13 @@ vim.keymap.set("n", ";", ":")
 vim.keymap.set("n", "<leader>k", "<cmd>only<CR>", { noremap = true, silent = true })
 -- kill that current buffer
 vim.keymap.set("n", "<C-k>", "<cmd>bdelete!<CR>", { noremap = true, silent = true })
-vim.keymap.set("i", "jk", "<Esc>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>h", ":cd %:h<CR>", { noremap = true})
+vim.keymap.set("i", "jk", "<Esc>",                { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>h", ":cd %:h<CR>",   { noremap = true})
 
 -- Tabs
-vim.keymap.set("n", "<leader>tn", "<cmd>tabnew<CR>", { silent = true, noremap = true})
-vim.keymap.set("n", "<leader>tk", "<cmd>tabclose<CR>", { silent = true, noremap = true})
-vim.keymap.set("n", "<leader>tl", "<cmd>tabnext<CR>", { silent = true, noremap = true})
+vim.keymap.set("n", "<leader>tn", "<cmd>tabnew<CR>",      { silent = true, noremap = true})
+vim.keymap.set("n", "<leader>tk", "<cmd>tabclose<CR>",    { silent = true, noremap = true})
+vim.keymap.set("n", "<leader>tl", "<cmd>tabnext<CR>",     { silent = true, noremap = true})
 vim.keymap.set("n", "<leader>th", "<cmd>tabprevious<CR>", { silent = true, noremap = true})
 
 -- Easy Resizing of windows
@@ -75,7 +75,6 @@ vim.keymap.set("n", "<C-Down>", "<C-w>-")
 vim.keymap.set("n", "<C-Up>", "<C-w>+")
 vim.keymap.set("n", "<C-Left>", "<C-w><")
 vim.keymap.set("n", "<C-Right>", "<C-w>>")
-
 vim.keymap.set("n", "<leader>wl", "<C-w>l")
 vim.keymap.set("n", "<leader>wh", "<C-w>h")
 vim.keymap.set("n", "<leader>wk", "<C-w>k")
@@ -96,7 +95,6 @@ vim.keymap.set("v", "P", '"+p')
 vim.keymap.set("n", "Y", '"+Y')
 vim.keymap.set("v", "Y", '"+y')
 
-
 -- Find files from home directory
 vim.keymap.set("n", "<leader>f", function()
     local dir = vim.fn.input("Dir> ", vim.fn.expand("~") .. "/", "dir")
@@ -111,9 +109,8 @@ end, { desc="Find files from home directory", noremap = true, silent = true})
 vim.keymap.set("n", "<C-f>", ":find ", {desc = "Goto a particular directory", noremap = true})
 
 -- terminal
-
 vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], { noremap = true, silent = true})
-vim.keymap.set('t', "<CSPACE>", "<cmd>terminal<CR>", { noremap = true, silent = true})
+vim.keymap.set('n', "<C-SPACE>", "<cmd>terminal<CR>", { noremap = true, silent = true})
 
 -- Find Buffers
 vim.keymap.set("n", "<C-b>", "<cmd>FzfLua buffers<CR>", { noremap = true, silent = true })
@@ -174,42 +171,48 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 vim.lsp.enable({
     -- 'lua-language-server',
     'ols',
-    'elixirls',
-    'gleamls',
+    'luals',
+    -- 'elixirls',
+    -- 'gleamls',
 })
-
 
 vim.diagnostic.config({ virtual_text = true })
 vim.keymap.set("n", "<leader>m", function()
-    vim.diagnostic.open_float(nil, { focus = false }) 
-    end, {desc = "View Diagnostics Error", 
+    vim.diagnostic.open_float(nil, { focus = false })
+    end, {desc = "View Diagnostics Error",
 noremap = true})
 
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(args)
-        vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition, { buffer = args.buf })
-        vim.keymap.set('n', '<leader>gD', vim.lsp.buf.declaration, { buffer = args.buf })
+        vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition,     { buffer = args.buf })
+        vim.keymap.set('n', '<leader>gD', vim.lsp.buf.declaration,    { buffer = args.buf })
         vim.keymap.set('n', '<leader>gi', vim.lsp.buf.implementation, { buffer = args.buf })
-        vim.keymap.set('i', '<Cs>', vim.lsp.buf.signature_help, { buffer = args.buf })
+        vim.keymap.set('i', '<Cl>',       vim.lsp.buf.signature_help, { buffer = args.buf })
     end,
 })
 
+-- Start plugins here.....
 require("config.lazy")
 
 -- Personal theme settings
-vim.api.nvim_set_hl(0, "Whitespace",   { fg = "#1F1E1E" })
-vim.api.nvim_set_hl(0, "Normal",       { bg = "#03271B" })
-vim.api.nvim_set_hl(0, "NormalFloat",  { bg = "#03271B" })
-vim.api.nvim_set_hl(0, "signColumn",   { bg = "#03271B" })
-vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#E9FF81" })
-vim.api.nvim_set_hl(0, "Comment",      { fg = "#73909E" })
+vim.api.nvim_set_hl(0, "FloatBorder",        { bg = "#03271B"})
+vim.api.nvim_set_hl(0, "FloatTitle",         { bg = "#03271B"})
+vim.api.nvim_set_hl(0, "FloatFooter",        { bg = "#03271B"})
+vim.api.nvim_set_hl(0, "Whitespace",         { fg = "#1F1E1E" })
+vim.api.nvim_set_hl(0, "Normal",             { bg = "#03271B" })
+vim.api.nvim_set_hl(0, "NormalFloat",        { bg = "#03271B" })
+vim.api.nvim_set_hl(0, "signColumn",         { bg = "#03271B" })
+vim.api.nvim_set_hl(0, "WinSeparator",       { fg = "#73909E" })
+vim.api.nvim_set_hl(0, "Comment",            { fg = "#73909E" })
+vim.api.nvim_set_hl(0, "Pmenu",              { fg = "#73909E" })
+vim.api.nvim_set_hl(0, "RenderMarkdownCode", { bg = "#03271B" })
 
 -- Mini_Statusline
 vim.api.nvim_set_hl(0, "StatusLine",                { bg = "none" })
 vim.api.nvim_set_hl(0, "MiniStatuslineModeCommand", { bg = "#223A70"})
--- vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "#000000" })
--- vim.api.nvim_set_hl(0, "MiniStatuslineModeNormal", { bg = "#6F2929" })
--- vim.api.nvim_set_hl(0, "MiniStatuslineModeInsert", { bg = "#1E6F54"})
--- vim.api.nvim_set_hl(0, "MiniStatuslineModeVisual", { bg = "#C4693D"})
--- vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { bg = "#7788AA"})
--- vim.api.nvim_set_hl(0, "MiniStatuslineFileinfo", { bg = "#abab77"})
+vim.api.nvim_set_hl(0, "MiniStatuslineModeVisual",  { bg = "#C4693D"})
+-- vim.api.nvim_set_hl(0, "StatusLineNC",              { bg = "#000000" })
+-- vim.api.nvim_set_hl(0, "MiniStatuslineModeNormal",  { bg = "#6F2929" })
+-- vim.api.nvim_set_hl(0, "MiniStatuslineModeInsert",  { bg = "#1E6F54"})
+-- vim.api.nvim_set_hl(0, "MiniStatuslineFilename",    { bg = "#7788AA"})
+-- vim.api.nvim_set_hl(0, "MiniStatuslineFileinfo",    { bg = "#abab77"})
