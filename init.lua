@@ -97,7 +97,7 @@ vim.keymap.set("v", "Y", '"+y')
 
 -- Find files from home directory
 vim.keymap.set("n", "<leader>f", function()
-    local dir = vim.fn.input("Dir> ", vim.fn.expand("~") .. "/", "dir")
+    local dir = vim.fn.input("dir_name> ")
     if dir ~= "" then
         require("fzf-lua").files({ cwd = dir })
     else
@@ -110,10 +110,10 @@ vim.keymap.set("n", "<C-f>", ":find ", {desc = "Goto a particular directory", no
 
 -- terminal
 vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], { noremap = true, silent = true})
-vim.keymap.set('n', "<C-SPACE>", "<cmd>terminal<CR>", { noremap = true, silent = true})
+-- vim.keymap.set('n', "<C-SPACE>", "<cmd>terminal<CR>", { noremap = true, silent = true})
 
 -- Find Buffers
-vim.keymap.set("n", "<C-b>", "<cmd>FzfLua buffers<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>b", "<cmd>FzfLua buffers<CR>", { noremap = true, silent = true })
 
 -- GREP WORD
 vim.keymap.set("n", "<C-g>", "<cmd>FzfLua grep<CR>", { noremap = true, silent = true })
@@ -123,7 +123,7 @@ vim.keymap.set("n", "<leader>l", "<cmd>FzfLua grep_project<CR>", { noremap = tru
 
 -- Run programs
 -- vim.keymap.set("n", "<leader>r", ":Command ", { noremap = true })
-vim.keymap.set("n", "<leader>r", ":term ", { noremap = true })
+vim.keymap.set("n", "<leader>r", "<cmd>terminal<CR>", { noremap = true })
 
 -- save file write to a root owned file
 vim.api.nvim_create_user_command("W", function()
@@ -171,6 +171,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 vim.lsp.enable({
     -- 'lua-language-server',
     'ols',
+    'zls',
     'luals',
     -- 'elixirls',
     -- 'gleamls',
