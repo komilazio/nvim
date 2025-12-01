@@ -10,7 +10,7 @@ vim.opt.breakindent = true
 vim.opt.ignorecase = true
 vim.opt.wrap = true
 vim.opt.incsearch = true
-vim.opt.cursorline = false
+vim.opt.cursorline = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.termguicolors = true
@@ -200,11 +200,14 @@ vim.api.nvim_set_hl(0, "FloatBorder",        { bg = "#03271B"})
 vim.api.nvim_set_hl(0, "FloatTitle",         { bg = "#03271B"})
 vim.api.nvim_set_hl(0, "FloatFooter",        { bg = "#03271B"})
 vim.api.nvim_set_hl(0, "Whitespace",         { fg = "#1F1E1E" })
-vim.api.nvim_set_hl(0, "Normal",             { bg = "#03271B" })
-vim.api.nvim_set_hl(0, "NormalFloat",        { bg = "#03271B" })
+vim.api.nvim_set_hl(0, "Normal",             { bg = "#03271B", fg = "#DFD6CB" })
+vim.api.nvim_set_hl(0, "NormalFloat",        { bg = "#03271B", fg = "#DFD6CB" })
 vim.api.nvim_set_hl(0, "signColumn",         { bg = "#03271B" })
+vim.api.nvim_set_hl(0, "Cursorline",         { bg = "#032E20" })
 vim.api.nvim_set_hl(0, "WinSeparator",       { fg = "#73909E" })
 vim.api.nvim_set_hl(0, "Comment",            { fg = "#73909E" })
+vim.api.nvim_set_hl(0, "Function",           { fg = "#EC8921" })
+vim.api.nvim_set_hl(0, "Variable",           { fg = "#DFD6CB" })
 vim.api.nvim_set_hl(0, "Pmenu",              { fg = "#73909E" })
 vim.api.nvim_set_hl(0, "RenderMarkdownCode", { bg = "#03271B" })
 
