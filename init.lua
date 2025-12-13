@@ -10,9 +10,9 @@ vim.opt.breakindent = true
 vim.opt.ignorecase = true
 vim.opt.wrap = true
 vim.opt.incsearch = true
-vim.opt.cursorline = true
-vim.opt.number = true
-vim.opt.relativenumber = true
+vim.opt.cursorline = false
+-- vim.opt.number = true
+-- vim.opt.relativenumber = true
 vim.opt.termguicolors = true
 vim.opt.splitright = true
 vim.opt.laststatus = 3
@@ -24,7 +24,7 @@ vim.opt.updatetime = 80
 vim.opt.timeoutlen = 80
 vim.opt.autochdir = false
 vim.opt.showtabline = 1
-vim.opt.signcolumn = "yes"
+vim.opt.signcolumn = "no"
 vim.g.mapleader = " "
 vim.opt.winborder = "rounded"
 vim.g.termguicolors = 1
@@ -95,15 +95,9 @@ vim.keymap.set("v", "P", '"+p')
 vim.keymap.set("n", "Y", '"+Y')
 vim.keymap.set("v", "Y", '"+y')
 
--- Find files from home directory
-vim.keymap.set("n", "<leader>f", function()
-    local dir = vim.fn.input("dir_name> ")
-    if dir ~= "" then
-        require("fzf-lua").files({ cwd = dir })
-    else
-        require("fzf-lua").files()
-    end
-end, { desc="Find files from home directory", noremap = true, silent = true})
+vim.keymap.set("n", "<leader>p", "<cmd>FzfLua files<CR>", { desc="Find files in the current working directory", noremap = true, silent = true})
+vim.keymap.set("n", "<leader>f", "<cmd>lua FzfLua.files({ cwd = '~/' })<CR>", { desc="Find files from the home directory", noremap = true, silent = true})
+vim.keymap.set("n", "<leader>/", "<cmd>lua FzfLua.files({ cwd = '/' })<CR>",  { desc="Find files the system directory", noremap = true, silent = true})
 
 -- Goto a Directory
 vim.keymap.set("n", "<C-f>", ":find ", {desc = "Goto a particular directory", noremap = true})
@@ -123,7 +117,10 @@ vim.keymap.set("n", "<leader>l", "<cmd>FzfLua grep_project<CR>", { noremap = tru
 
 -- Run programs
 -- vim.keymap.set("n", "<leader>r", ":Command ", { noremap = true })
-vim.keymap.set("n", "<leader>r", "<cmd>terminal<CR>", { noremap = true })
+-- vim.keymap.set("n", "<leader>r", "<cmd>tabnew \| terminal<CR>", { noremap = true })
+vim.cmd[[
+nnoremap <leader>r :tabnew \| terminal<CR>
+]]
 
 -- save file write to a root owned file
 vim.api.nvim_create_user_command("W", function()
@@ -185,36 +182,53 @@ noremap = true})
 
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(args)
-        vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition,     { buffer = args.buf })
-        vim.keymap.set('n', '<leader>gD', vim.lsp.buf.declaration,    { buffer = args.buf })
-        vim.keymap.set('n', '<leader>gi', vim.lsp.buf.implementation, { buffer = args.buf })
-        vim.keymap.set('i', '<Cl>',       vim.lsp.buf.signature_help, { buffer = args.buf })
+        vim.keymap.set('n', '<leader>gd',  vim.lsp.buf.definition,     { buffer = args.buf })
+        vim.keymap.set('n', '<leader>gD',  vim.lsp.buf.declaration,    { buffer = args.buf })
+        vim.keymap.set('n', '<leader>gi',  vim.lsp.buf.implementation, { buffer = args.buf })
+        vim.keymap.set('i', '<C-l>',       vim.lsp.buf.signature_help, { buffer = args.buf })
     end,
 })
 
 -- Start plugins here.....
 require("config.lazy")
 
+--Set colorscheme for the neovim
+vim.cmd("colorscheme vinedunes")
+
 -- Personal theme settings
-vim.api.nvim_set_hl(0, "FloatBorder",        { bg = "#03271B"})
-vim.api.nvim_set_hl(0, "FloatTitle",         { bg = "#03271B"})
-vim.api.nvim_set_hl(0, "FloatFooter",        { bg = "#03271B"})
-vim.api.nvim_set_hl(0, "Whitespace",         { fg = "#1F1E1E" })
-vim.api.nvim_set_hl(0, "Normal",             { bg = "#03271B", fg = "#DFD6CB" })
-vim.api.nvim_set_hl(0, "NormalFloat",        { bg = "#03271B", fg = "#DFD6CB" })
-vim.api.nvim_set_hl(0, "signColumn",         { bg = "#03271B" })
-vim.api.nvim_set_hl(0, "Cursorline",         { bg = "#032E20" })
-vim.api.nvim_set_hl(0, "WinSeparator",       { fg = "#73909E" })
-vim.api.nvim_set_hl(0, "Comment",            { fg = "#73909E" })
-vim.api.nvim_set_hl(0, "Function",           { fg = "#EC8921" })
-vim.api.nvim_set_hl(0, "Variable",           { fg = "#DFD6CB" })
-vim.api.nvim_set_hl(0, "Pmenu",              { fg = "#73909E" })
-vim.api.nvim_set_hl(0, "RenderMarkdownCode", { bg = "#03271B" })
+-- vim.api.nvim_set_hl(0, "Normal",             { bg = "#000000", fg = "#F89542"})
+-- vim.api.nvim_set_hl(0, "NormalNC",           { bg = "#000000"})
+-- vim.api.nvim_set_hl(0, "EndofBuffer",        { bg = "#000000"})
+-- vim.api.nvim_set_hl(0, "NormalFloat",        { bg = "#000000"})
+-- vim.api.nvim_set_hl(0, "Type",               { fg = "#F5A623" })
+-- vim.api.nvim_set_hl(0, "@type",              { fg = "#F5A623" })
+-- vim.api.nvim_set_hl(0, "@variable",          { fg = "#F8B66E" })
+-- vim.api.nvim_set_hl(0, "Variable",           { fg = "#F89542" })
+-- vim.api.nvim_set_hl(0, "Whitespace",         { fg = "#1F1E1E" })
+-- vim.api.nvim_set_hl(0, "Number",             { fg = "#ff6347" })
+-- vim.api.nvim_set_hl(0, "RenderMarkdownCode", { bg = "none" })
+-- vim.api.nvim_set_hl(0, "WinSeparator",       { fg = "#8B6E6E" })
+
+-- vim.api.nvim_set_hl(0, "Delimeter",          { bg = "none" })
+-- vim.api.nvim_set_hl(0, "FloatBorder",        { bg = "#03271B"})
+-- vim.api.nvim_set_hl(0, "FloatTitle",         { bg = "#03271B"})
+-- vim.api.nvim_set_hl(0, "FloatFooter",        { bg = "#03271B"})
+-- vim.api.nvim_set_hl(0, "Whitespace",         { fg = "#1F1E1E" })
+-- vim.api.nvim_set_hl(0, "Normal",             { bg = "#03271B", fg = "#DFD6CB" })
+-- vim.api.nvim_set_hl(0, "NormalFloat",        { bg = "#03271B", fg = "#DFD6CB" })
+-- vim.api.nvim_set_hl(0, "signColumn",         { bg = "#03271B" })
+-- vim.api.nvim_set_hl(0, "Cursorline",         { bg = "#032E20" })
+-- vim.api.nvim_set_hl(0, "WinSeparator",       { fg = "#73909E" })
+-- vim.api.nvim_set_hl(0, "Comment",            { fg = "#73909E" })
+-- vim.api.nvim_set_hl(0, "Function",           { fg = "#EC8921" })
+-- vim.api.nvim_set_hl(0, "@variable",          { fg = "#DFD6CB" })
+-- vim.api.nvim_set_hl(0, "Pmenu",              { fg = "#73909E" })
+-- vim.api.nvim_set_hl(0, "RenderMarkdownCode", { bg = "#03271B" })
 
 -- Mini_Statusline
-vim.api.nvim_set_hl(0, "StatusLine",                { bg = "none" })
-vim.api.nvim_set_hl(0, "MiniStatuslineModeCommand", { bg = "#223A70"})
-vim.api.nvim_set_hl(0, "MiniStatuslineModeVisual",  { bg = "#C4693D"})
+-- vim.api.nvim_set_hl(0, "StatusLine",                { bg = "none" })
+-- vim.api.nvim_set_hl(0, "MiniStatuslineModeCommand", { bg = "#223A70"})
+-- vim.api.nvim_set_hl(0, "MiniStatuslineModeVisual",  { bg = "#C4693D"})
 -- vim.api.nvim_set_hl(0, "StatusLineNC",              { bg = "#000000" })
 -- vim.api.nvim_set_hl(0, "MiniStatuslineModeNormal",  { bg = "#6F2929" })
 -- vim.api.nvim_set_hl(0, "MiniStatuslineModeInsert",  { bg = "#1E6F54"})
