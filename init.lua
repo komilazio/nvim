@@ -4,11 +4,11 @@ vim.opt.showmode = false
 vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
 vim.opt.sidescrolloff = 3
-vim.opt.scrolloff = 9
+vim.opt.scrolloff = 9999
 vim.opt.swapfile = false
 vim.opt.breakindent = true
 vim.opt.ignorecase = true
-vim.opt.wrap = true
+vim.opt.wrap = false
 vim.opt.incsearch = true
 vim.opt.cursorline = false
 -- vim.opt.number = true
@@ -33,15 +33,27 @@ vim.cmd("set listchars+=tab:..,lead:.")
 
 ---------Neovide Stuffs--------------
 -- vim.o.guifont = "MartianMono Nerd Font Propo:h12"
-vim.o.guifont = "Hurmit Nerd Font:h11"
+vim.o.guifont = "FantasqueSansM Nerd Font Mono:h11"
 if vim.g.neovide == true then
     vim.api.nvim_set_keymap("n", "<C-=>", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1<CR>", { silent = true })
     vim.api.nvim_set_keymap("n", "<C-->", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1<CR>", { silent = true })
     vim.api.nvim_set_keymap("n", "<C-0>", ":lua vim.g.neovide_scale_factor = 1<CR>", { silent = true })
 end
-vim.g.neovide_cursor_animation_length = 0.0
-vim.g.neovide_scroll_animation_length = 0.0
-vim.g.neovide_cursor_vfx_mode = "railgun"
+
+
+vim.g.neovide_progress_bar_enabled = true
+vim.g.neovide_progress_bar_height = 5.0
+vim.g.neovide_progress_bar_animation_speed = 200.0
+vim.g.neovide_progress_bar_hide_delay = 0.2
+
+vim.g.neovide_cursor_vfx_mode = "sonicboom"
+
+vim.g.neovide_cursor_trail_size = 0.5
+vim.g.neovide_cursor_animation_length = 0.150
+vim.g.neovide_scroll_animation_length = 0.5
+vim.g.neovide_position_animation_length = 0.15
+vim.g.neovide_scroll_animation_far_lines = 1
+-- vim.g.neovide_cursor_vfx_mode = "railgun"
 vim.g.neovide_cursor_hack = true
 vim.g.neovide_hide_mouse_when_typing = true
 
@@ -100,7 +112,7 @@ vim.keymap.set("n", "<leader>f", "<cmd>lua FzfLua.files({ cwd = '~/' })<CR>", { 
 vim.keymap.set("n", "<leader>/", "<cmd>lua FzfLua.files({ cwd = '/' })<CR>",  { desc="Find files the system directory", noremap = true, silent = true})
 
 -- Goto a Directory
-vim.keymap.set("n", "<C-f>", ":find ", {desc = "Goto a particular directory", noremap = true})
+-- vim.keymap.set("n", "<C-f>", ":find ", {desc = "Goto a particular directory", noremap = true})
 
 -- terminal
 vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], { noremap = true, silent = true})
@@ -170,6 +182,8 @@ vim.lsp.enable({
     'ols',
     'zls',
     'luals',
+    'serve_d',
+    'rust_analyzer',
     -- 'elixirls',
     -- 'gleamls',
 })
@@ -194,6 +208,31 @@ require("config.lazy")
 
 --Set colorscheme for the neovim
 vim.cmd("colorscheme vinedunes")
+vim.api.nvim_set_hl(0, "StatusLine",  { bg = "none" })
+vim.api.nvim_set_hl(0, "TabLine",     { bg = "none", fg = "#73909E" })
+vim.api.nvim_set_hl(0, "TabLineFill", { bg = "none" })
+vim.api.nvim_set_hl(0, "@function.macro.rust", {fg = "#58C6E9"})
+vim.api.nvim_set_hl(0, "@lsp.type.macro.rust", {fg = "#58C6E9"})
+
+if vim.g.neovide then
+    vim.g.terminal_color_0 = "#1F1E1E"   -- e.g., Black
+    vim.g.terminal_color_1 = "#ff6347"   -- e.g., Red
+    vim.g.terminal_color_2 = "#95d695"   -- e.g., Green
+    vim.g.terminal_color_3 = "#F5A623"   -- e.g., Yellow
+    vim.g.terminal_color_4 = "#EC8921"   -- e.g., Blue
+    vim.g.terminal_color_5 = "#5f2525"   -- e.g., Magenta
+    vim.g.terminal_color_6 = "#747474"   -- e.g., Cyan
+    vim.g.terminal_color_8 = "#514742"   -- e.g., Black (bright)
+    -- vim.g.terminal_color_7 = "#your_color_7_hex"   -- e.g., White (light)
+    -- vim.g.terminal_color_9 = "#your_color_9_hex"   -- e.g., Red (bright)
+    -- vim.g.terminal_color_10 = "#your_color_10_hex" -- e.g., Green (bright)
+    -- vim.g.terminal_color_11 = "#your_color_11_hex" -- e.g., Yellow (bright)
+    -- vim.g.terminal_color_12 = "#your_color_12_hex" -- e.g., Blue (bright)
+    -- vim.g.terminal_color_13 = "#your_color_13_hex" -- e.g., Magenta (bright)
+    -- vim.g.terminal_color_14 = "#your_color_14_hex" -- e.g., Cyan (bright)
+    -- vim.g.terminal_color_15 = "#your_color_15_hex" -- e.g., White (bright)
+end
+
 
 -- Personal theme settings
 -- vim.api.nvim_set_hl(0, "Normal",             { bg = "#000000", fg = "#F89542"})
