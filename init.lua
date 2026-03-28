@@ -211,16 +211,16 @@ vim.pack.add({
     "https://github.com/stevearc/oil.nvim",
     "https://github.com/folke/which-key.nvim",
     "https://github.com/mhinz/vim-startify",
-    "https://github.com/komilazio/vsassist.new"
+    -- "https://github.com/komilazio/vsassist.new"
 })
 
--- NOTE: this is temporary, while i was trying out the colorsscheme
--- vim.opt.rtp:append(vim.fn.stdpath("config") .. "/vsassist.new")
--- vim.cmd("colorscheme vsassist")
+-- NOTE(lazio): this is temporary, while i was trying out the colorsscheme
+vim.opt.rtp:append(vim.fn.stdpath("config") .. "/vsassist.new")
+vim.cmd("colorscheme vsassist")
 
 -- Color Theme
-require("vsassist").setup({})
-vim.cmd("colorscheme vsassist")
+-- require("vsassist").setup({})
+-- vim.cmd("colorscheme vsassist")
 
 -- Colorizer
 require("colorizer").setup()
@@ -382,7 +382,7 @@ require("oil").setup({
         "icon",
         "permissions",
         "size",
-        "mtime",
+        -- "mtime",
     },
     buf_options = {
         buflisted = false,
@@ -429,7 +429,7 @@ require("oil").setup({
     },
     use_default_keymaps = true,
     view_options = {
-        show_hidden = false,
+        show_hidden = true,
         is_hidden_file = function(name, bufnr)
             local m = name:match("^%.")
             return m ~= nil

@@ -44,10 +44,6 @@
       "rev": "c492741b4679b3cdd4d9e34138209784e061d916",
       "src": "https://github.com/lambdalisue/vim-suda"
     },
-    "vsassist.new": {
-      "rev": "22d05112b879ffb7638c52a1e32510bc71383e06",
-      "src": "https://github.com/komilazio/vsassist.new"
-    },
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
       "src": "https://github.com/folke/which-key.nvim"
