@@ -5,6 +5,17 @@ local o = vim.o
 o.background = "dark"
 local opt = vim.opt
 vim.cmd([[set guicursor="disable"]])
+vim.cmd([[let g:table_mode_corner='|']])
+vim.cmd([[
+autocmd BufEnter *.md TableModeEnable
+autocmd BufLeave *.md TableModeDisable
+]])
+
+-- Open an extra vertical split on startup
+vim.cmd([[
+set hidden
+autocmd VimEnter * vsplit
+]])
 
 vim.g.mapleader = " "
 -- opt.filetype = "on"
@@ -137,6 +148,9 @@ vim.g.neovide_cursor_hack = true
 local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
+map("n", "<leader>q", ":q<cr>", { silent = true })
+
+
 -- escape terminal mode
 vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], { noremap = true, silent = true})
 
@@ -151,6 +165,9 @@ map("n", "<leader>v", ":vs<CR>", {silent = true})
 -- Better indenting (stay in visual mode)
 map("v", "<", "<gv")
 map("v", ">", ">gv")
+
+-- pasting in command mode in neovide
+vim.keymap.set('c', '<C-p>', '<C-r>+', { noremap = true }) -- in command mode
 
 -- Formating tables in markdown
 --This is the best command i have ever used in neovim: !column -t -s '|' -o '|'
@@ -207,7 +224,7 @@ map("n", "<C-l>", ":tabnext<CR>", {silent = true})
 map("t", "<C-h>", "<C-\\><C-N>:tabprevious<CR>", {silent = true})
 map("t", "<C-l>", "<C-\\><C-N>:tabnext<CR>", {silent = true})
 
-map("n", "<leader>k", "<cmd>bdelete!<CR>", { desc = "Delete Current Buffer", silent = true})
+-- map("n", "<leader>k", "<cmd>bdelete!<CR>", { desc = "Delete Current Buffer", silent = true})
 map("n", "<leader>o", "<cmd>only<CR>", { desc = "Delete Current Buffer", silent = true})
 
 -- move stuff up or down and auto indent
@@ -261,6 +278,7 @@ vim.pack.add({
     "https://github.com/nvim-lualine/lualine.nvim",
     "https://github.com/mvllow/modes.nvim",
     "https://github.com/MeanderingProgrammer/render-markdown.nvim",
+    "https://github.com/dhruvasagar/vim-table-mode",
     -- "https://github.com/nvim-mini/mini.statusline",
     -- "https://github.com/nvim-tree/nvim-web-devicons",
     -- "https://github.com/rmagatti/auto-session",
@@ -612,3 +630,125 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set('i', '<C-l>',       vim.lsp.buf.signature_help, { buffer = args.buf })
     end,
 })
+
+-- Greeter
+-- ==================
+local intro_bufnr = nil
+
+function _G.get_intro_buffer()
+  if intro_bufnr and vim.api.nvim_buf_is_valid(intro_bufnr) then
+    return intro_bufnr
+  end
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  intro_bufnr = buf
+
+  local v = vim.version()
+  local version = string.format("NVIM v%d.%d.%d", v.major, v.minor, v.patch)
+
+  local lines = {
+    "",
+    "",
+    "                      ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ",
+    "                      ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║ ",
+    "                      ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║ ",
+    "                      ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║ ",
+    "                      ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║ ",
+    "                      ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝ ",
+    "                                                     ",    "",
+    "",
+    "",
+"                            :h-                                  Nhy`               ",
+"                           -mh.                           h.    `Ndho               ",
+"                           hmh+                          oNm.   oNdhh               ",
+"                          `Nmhd`                        /NNmd  /NNhhd               ",
+"                          -NNhhy                      `hMNmmm`+NNdhhh               ",
+"                          .NNmhhs              ```....`..-:/./mNdhhh+               ",
+"                           mNNdhhh-     `.-::///+++////++//:--.`-/sd`               ",
+"                           oNNNdhhdo..://++//++++++/+++//++///++/-.`                ",
+"                      y.   `mNNNmhhhdy+/++++//+/////++//+++///++////-` `/oos:       ",
+"                 .    Nmy:  :NNNNmhhhhdy+/++/+++///:.....--:////+++///:.`:s+        ",
+"                 h-   dNmNmy oNNNNNdhhhhy:/+/+++/-         ---:/+++//++//.`         ",
+"                 hd+` -NNNy`./dNNNNNhhhh+-://///    -+oo:`  ::-:+////++///:`        ",
+"                 /Nmhs+oss-:++/dNNNmhho:--::///    /mmmmmo  ../-///++///////.       ",
+"                  oNNdhhhhhhhs//osso/:---:::///    /yyyyso  ..o+-//////////:/.      ",
+"                   /mNNNmdhhhh/://+///::://////     -:::- ..+sy+:////////::/:/.     ",
+"                     /hNNNdhhs--:/+++////++/////.      ..-/yhhs-/////////::/::/`    ",
+"                       .ooo+/-::::/+///////++++//-/ossyyhhhhs/:///////:::/::::/:    ",
+"                       -///:::::::////++///+++/////:/+ooo+/::///////.::://::---+`   ",
+"                       /////+//++++/////+////-..//////////::-:::--`.:///:---:::/:   ",
+"                       //+++//++++++////+++///::--                 .::::-------::   ",
+"                       :/++++///////////++++//////.                -:/:----::../-   ",
+"                       -/++++//++///+//////////////               .::::---:::-.+`   ",
+"                       `////////////////////////////:.            --::-----...-/    ",
+"                        -///://////////////////////::::-..      :-:-:-..-::.`.+`    ",
+"                         :/://///:///::://::://::::::/:::::::-:---::-.-....``/- -   ",
+"                           ::::://::://::::::::::::::----------..-:....`.../- -+oo/ ",
+"                            -/:::-:::::---://:-::-::::----::---.-.......`-/.      ``",
+"                           s-`::--:::------:////----:---.-:::...-.....`./:          ",
+"                          yMNy.`::-.--::..-dmmhhhs-..-.-.......`.....-/:`           ",
+"                         oMNNNh. `-::--...:NNNdhhh/.--.`..``.......:/-              ",
+"                        :dy+:`      .-::-..NNNhhd+``..`...````.-::-`                ",
+"                                        .-:mNdhh:.......--::::-`                    ",
+"                                           yNh/..------..`                          ",
+"                                                                                    ",
+  }
+
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+
+  -- buffer settings
+  vim.bo[buf].buftype = "nofile"
+  vim.bo[buf].bufhidden = "hide"   -- important: don't wipe
+  vim.bo[buf].swapfile = false
+  vim.bo[buf].modifiable = false
+
+  return buf
+end
+
+function _G.ensure_intro_right()
+  local intro = _G.get_intro_buffer()
+
+  -- create right split if only one window
+  if #vim.api.nvim_list_wins() == 1 then
+    vim.cmd("vsplit")
+  end
+
+  -- go to rightmost window
+  vim.cmd("wincmd l")
+  vim.api.nvim_win_set_buf(0, intro)
+
+  -- go back left (main workspace)
+  vim.cmd("wincmd h")
+end
+
+function _G.delete_buffer_keep_window()
+  local current = vim.api.nvim_get_current_buf()
+  local intro = _G.get_intro_buffer()
+  local alternate = vim.fn.bufnr("#")
+
+  if current == intro then
+    return
+  end
+
+  if vim.fn.buflisted(alternate) == 1 and alternate ~= intro then
+    vim.cmd("buffer #")
+  else
+    vim.cmd("enew")
+  end
+
+  vim.cmd("bdelete " .. current)
+
+  _G.ensure_intro_right()
+end
+
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    -- only if no file passed
+    if vim.fn.argc() == 0 then
+      vim.cmd("enew")
+      _G.ensure_intro_right()
+    end
+  end,
+})
+
+vim.keymap.set("n", "<leader>k", delete_buffer_keep_window, { silent = true })

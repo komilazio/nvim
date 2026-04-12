@@ -5,7 +5,7 @@ vim.g.colors_name = 'crusx-paper'
 
 local color = {
     fg = "#857554",
-    bg = "#151516",
+    bg = "#111111",
     bg_float = "#181819",
     comment = "#616060",
     cursor_line = "#240501",
@@ -33,6 +33,7 @@ hi('NormalNC',     { fg = color.fg, bg = color.bg })
 hi('NormalFloat',  { fg = color.fg, bg = color.bg_float })
 hi('FloatTitle',   { fg = color.fg, bg = color.bg, bold = false })
 hi('lCursor',      { fg = color.fg, bg = color.bg })
+hi('Title',        { fg = color.comment, bg = color.bg })
 hi('CursorIM',     { fg = color.fg, bg = color.bg })
 hi('TermCursor',   { fg = color.fg, bg = color.bg })
 hi('TermCursorNC', { fg = color.fg, bg = color.bg })
@@ -120,7 +121,7 @@ hi('@keyword.return',     { fg = color.fg,  bold = false })
 hi('@conditional',        { fg = color.keyword,  bold = false })
 hi('@repeat',             { fg = color.fg,  bold = false })
 hi('@exception',          { fg = color.fg,  bold = false })
-hi('@include',            { fg = color.builtin,  bold = false })
+hi('@include',            { fg = color.builtin })
 hi('@type',               { fg = color.keyword, underline = false,  bold = false, italic = false })
 hi('@statement',          { fg = color.keyword, underline = false,  bold = false, italic = false })
 hi('@type.builtin',       { fg = color.builtin, underline = false,  bold = false })
@@ -180,6 +181,7 @@ hi('RenderMarkdownTableHead', { fg = color.builtin })
 hi('RenderMarkdownTableRow',  { fg = color.func })
 hi('RenderMarkdownSuccess', { fg = color.fg })
 hi('RenderMarkdownInfo',    { fg = color.fg })
+hi('@markup.heading.markdown', { fg = color.fg })
 hi('@markup.heading.1.markdown', { fg = color.func })
 hi('@markup.heading.2.markdown', { fg = color.func })
 hi('@markup.heading.3.markdown', { fg = color.func })
