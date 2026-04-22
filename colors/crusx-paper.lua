@@ -2,12 +2,13 @@ vim.cmd('highlight clear')
 vim.g.colors_name = 'crusx-paper'
 
 -- TODO(lazio): Put in real "dust" particle or whatever
+--
 
 local color = {
-    fg = "#857554",
+    fg = "#8D887E",
     bg = "#111111",
     bg_float = "#181819",
-    comment = "#616060",
+    comment = "#665B5B",
     cursor_line = "#240501",
     keyword = "#C99619",
     number = "#677522",
@@ -18,6 +19,7 @@ local color = {
     func = "#B14B25",
     builtin = "#2E7465",
     seperator = "#151516",
+    sign_column = "#2A2D33",
     tab = "#458F2C",
     tab_off = "#193F0C",
     string = "#515C1B",
@@ -167,9 +169,9 @@ hi('@lsp.mod.decoration.rust',{ fg = color.keyword, underline = true })
 
 -- Markdown headings (render-markdown.nvim)
 hi('RenderMarkdownH1',    { fg = color.func })
-hi('RenderMarkdownH2',    { fg = color.func })
-hi('RenderMarkdownH3',    { fg = color.func })
-hi('RenderMarkdownH4',    { fg = color.func })
+hi('RenderMarkdownH2',    { fg = color.search })
+hi('RenderMarkdownH3',    { fg = color.in_search })
+hi('RenderMarkdownH4',    { fg = color.tab })
 hi('RenderMarkdownH1Bg',  { bg = color.bg_float })
 hi('RenderMarkdownH2Bg',  { bg = color.bg_float })
 hi('RenderMarkdownH3Bg',  { bg = color.bg_float })
@@ -183,11 +185,9 @@ hi('RenderMarkdownSuccess', { fg = color.fg })
 hi('RenderMarkdownInfo',    { fg = color.fg })
 hi('@markup.heading.markdown', { fg = color.fg })
 hi('@markup.heading.1.markdown', { fg = color.func })
-hi('@markup.heading.2.markdown', { fg = color.func })
-hi('@markup.heading.3.markdown', { fg = color.func })
-hi('@markup.heading.4.markdown', { fg = color.func })
-hi('@markup.heading.5.markdown', { fg = color.func })
-hi('@markup.heading.6.markdown', { fg = color.func })
+hi('@markup.heading.2.markdown', { fg = color.search })
+hi('@markup.heading.3.markdown', { fg = color.in_search })
+hi('@markup.heading.4.markdown', { fg = color.tab })
 hi('@markup.raw.markdown_inline', { bg = color.visual })
 hi('@text.literal.markdown',       { fg = color.fg })
 hi('@text.uri',           { fg = color.keyword, underline = true })
@@ -211,6 +211,13 @@ autocmd BufRead,BufNewFile * call matchadd('Note', '\<NOTE\>')
 autocmd BufRead,BufNewFile * call matchadd('Fixme', '\<FIXME\>')
 autocmd BufRead,BufNewFile * call matchadd('TODO', '\<TODO\>')
 ]])
+
+
+vim.api.nvim_set_hl(0, 'ModesDefaultCursor', {bg = "#ff5400", fg = "#000000"})
+vim.api.nvim_set_hl(0, 'ModesVisualVisual', {bg = "#310147"})
+
+-- vim.api.nvim_set_hl(0, 'ModesDefaultCursor', {bg = "#ff5400", fg = "#000000"})
+vim.api.nvim_set_hl(0, 'ModesInsertCursorLine', {fg = color.fg})
 
 -- FZFLua
 vim.env.FZF_DEFAULT_OPTS = "--color=bg:#151516"
