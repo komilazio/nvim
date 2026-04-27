@@ -1,22 +1,32 @@
 --=========================================================
 -- OPTIONS 
 --=========================================================
+vim.deprecate = function() end
+
 local o = vim.o
 o.background = "dark"
 local opt = vim.opt
 vim.cmd([[set guicursor="disable"]])
 vim.cmd([[let g:table_mode_corner='|']])
-vim.cmd([[
-autocmd BufEnter *.md TableModeEnable
-autocmd BufLeave *.md TableModeDisable
-]])
-vim.cmd([[set filetype]])
+local group = vim.api.nvim_create_augroup("TableModeGroup", { clear = true })
 
--- Open an extra vertical split on startup
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = group,
+  pattern = "*.md",
+  command = "TableModeEnable",
+})
+
+vim.api.nvim_create_autocmd("BufLeave", {
+  group = group,
+  pattern = "*.md",
+  command = "TableModeDisable",
+})
+
 -- vim.cmd([[
--- set hidden
--- autocmd VimEnter * vsplit
+-- autocmd BufEnter *.md TableModeEnable
+-- autocmd BufLeave *.md TableModeDisable
 -- ]])
+vim.cmd([[set filetype=on]])
 
 vim.g.mapleader = " "
 -- opt.filetype = "on"
@@ -27,7 +37,7 @@ opt.laststatus = 3
 vim.g.netrw_keepdir=0
 opt.number = false
 opt.relativenumber = false
-opt.signcolumn = "yes"
+-- opt.signcolumn = "yes"
 opt.termguicolors = true
 opt.cursorline = true
 opt.equalalways = true
@@ -120,29 +130,6 @@ end
 vim.g.autoformat = true
 vim.g.trouble_lualine = true
 
--- ===================================================
--- NEOVIDE SETTINGS
--- ===================================================
-vim.o.guifont = "UbuntuMono Nerd Font:h10"
-if vim.g.neovide == true then
-    vim.api.nvim_set_keymap("n", "<C-=>", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1<CR>", { silent = true })
-    vim.api.nvim_set_keymap("n", "<C-->", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1<CR>", { silent = true })
-    vim.api.nvim_set_keymap("n", "<C-0>", ":lua vim.g.neovide_scale_factor = 1<CR>", { silent = true })
-end
-vim.g.neovide_hide_mouse_when_typing = true
--- vim.g.neovide_progress_bar_enabled = true
--- vim.g.neovide_progress_bar_height = 5.0
--- vim.g.neovide_progress_bar_animation_speed = 200.0
-vim.g.neovide_progress_bar_hide_delay = 0.1
--- vim.g.neovide_cursor_vfx_mode = "sonicboom"
-vim.g.neovide_cursor_trail_size = 0.1
-vim.g.neovide_cursor_animation_length = 0.1
-vim.g.neovide_scroll_animation_length = 0.1
-vim.g.neovide_position_animation_length = 0.1
-vim.g.neovide_scroll_animation_far_lines = 1
--- vim.g.neovide_cursor_vfx_mode = "railgun"
-vim.g.neovide_cursor_hack = true
-
 --=========================================================
 -- KEYMAPS 
 --=========================================================
@@ -166,25 +153,13 @@ end, { desc = "Smart delete buffer/window", silent = true })
 
 -- escape terminal mode
 vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], { noremap = true, silent = true})
+vim.keymap.set('n', '<leader><space>', ":!")
 
 -- Clear search patterns
 map("n", "<ESC>", ":nohl<CR>", {silent = true})
 
 -- mapping character deleting
 map("n", "<Alt>b", "<Del>")
--- mapping vertical split
--- map("n", "<leader>v", ":vs<CR>", {silent = true})
-vim.keymap.set("n", "<leader>v", function()
-  vim.cmd("vsplit")
-
-  local buf = vim.api.nvim_create_buf(false, true) -- unlisted, scratch
-  vim.api.nvim_win_set_buf(0, buf)
-
-  vim.bo[buf].buftype = "nofile"
-  vim.bo[buf].bufhidden = "hide"
-  vim.bo[buf].swapfile = false
-  vim.bo[buf].modifiable = true
-end, { desc = "Open scratch buffer (right)", silent = true })
 
 -- Better indenting (stay in visual mode)
 map("v", "<", "<gv")
@@ -212,13 +187,63 @@ map("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result
 -- map("n", "j", "jzz",   { noremap = true, silent = true })
 -- map("n", "k", "kzz",   { noremap = true, silent = true })
 
--- Auto-close pairs (simple, no plugin needed)
-map("i", "`", "``<left>")
-map("i", '"', '""<left>')
-map("i", "(", "()<left>")
-map("i", "[", "[]<left>")
-map("i", "{", "{}<left>")
-map("i", "<", "<><left>")
+-- ++++++++++++++++++Auto-close pairs (simple, no plugin needed)++++++++++++++++++++
+-- store pending closing char
+local pending_closer = nil
+
+-- helper to insert text
+local function feedkeys(keys)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "i", true)
+end
+
+-- when typing opening quote
+vim.keymap.set("i", '"', function()
+  pending_closer = '"'
+  return '"'
+end, { expr = true })
+
+vim.keymap.set("i", "'", function()
+  pending_closer = "'"
+  return "'"
+end, { expr = true })
+
+vim.keymap.set("i", "(", function()
+  pending_closer = ")"
+  return "("
+end, { expr = true })
+
+vim.keymap.set("i", "{", function()
+  pending_closer = "}"
+  return "{"
+end, { expr = true })
+
+vim.keymap.set("i", "<", function()
+  pending_closer = ">"
+  return "<"
+end, { expr = true })
+
+vim.keymap.set("i", "`", function()
+  pending_closer = "`"
+  return "`"
+end, { expr = true })
+
+-- TAB = accept suggestion
+vim.keymap.set("i", "<Tab>", function()
+  if pending_closer then
+    local closer = pending_closer
+    pending_closer = nil
+    return closer
+  end
+  return "\t"
+end, { expr = true })
+
+-- ANY OTHER KEY = cancel suggestion
+vim.keymap.set("i", "<Char-0>", function()
+  pending_closer = nil
+  return vim.fn.nr2char(vim.v.char)
+end, { expr = true })
+
+
 
 -- Better paste (doesn't replace clipboard with deleted text)
 map("v", "p", '"_dP', opts)
@@ -248,8 +273,8 @@ map("n", "<leader>wj", "<C-w>j")
 -- TAB MANAGEMENT
 -- ═══════════════════════════════════════════════════════════
 map("n", "<C-t>", ":tabnew<CR>", {silent = true})
-map("n", "<C-h>", ":tabprevious<CR>", {silent = true})
-map("n", "<C-l>", ":tabnext<CR>", {silent = true})
+map("n", "<leader>th", ":tabprevious<CR>", {silent = true})
+map("n", "<leader>tl", ":tabnext<CR>", {silent = true})
 
 map("t", "<C-h>", "<C-\\><C-N>:tabprevious<CR>", {silent = true})
 map("t", "<C-l>", "<C-\\><C-N>:tabnext<CR>", {silent = true})
@@ -273,7 +298,7 @@ map({ "n", "x", "o"}, "s", function() require("flash").jump() end, { desc = "Fla
 --====================================================================
 
 -- Run programs and commands
-vim.keymap.set("n", "<leader>r", ":Command<Space>", { noremap = true })
+vim.keymap.set("n", "<leader>r", ":Command <Up><CR>", { noremap = true })
 
 -- Command completion helper
 local function command_complete(arglead, cmdline, cursorpos)
@@ -338,6 +363,7 @@ require("colorizer").setup()
 require("which-key").setup({ })
 -- Winshift
 require("winshift").setup()
+
 -- A simple helper to run command
 vim.api.nvim_create_user_command("Command", function(opts)
     local cmd = opts.args ~= "" and opts.args or os.getenv("SHELL") or "bash"
@@ -351,21 +377,6 @@ complete = command_complete,
 desc = "Open terminal below and run command",
 })
 
-require("modes").setup({
-    colors = {
-        bg = "", -- Optional bg param, defaults to Normal hl group
-        copy = "#f5c359",
-        delete = "#c75c6a",
-        change = "#c75c6a", -- Optional param, defaults to delete
-        format = "#c79585",
-        insert = "#54A004",
-        replace = "#245361",
-        select = "#A945D8", -- Optional param, defaults to visual
-        visual = "#A945D8", 
-    },
-
-    line_opacity = 0.1,
-})
 
 
 --
@@ -402,10 +413,26 @@ require('render-markdown').setup({
     },
 })
 
+require("modes").setup({
+    colors = {
+        bg = "", -- Optional bg param, defaults to Normal hl group
+        copy = "#f5c359",
+        delete = "#c75c6a",
+        change = "#c75c6a", -- Optional param, defaults to delete
+        format = "#c79585",
+        insert = "#54A004",
+        replace = "#245361",
+        select = "#A945D8", -- Optional param, defaults to visual
+        visual = "#A945D8", 
+    },
+
+    line_opacity = 0.1,
+})
+
 -- Open Directory in Oil using fzf-lua
 vim.keymap.set("n", "<leader>d", function()
   require("fzf-lua").fzf_exec(
-    "fd --type d --hidden --exclude .git . $HOME",
+    "fd --type d --hidden --exclude .git . /",
     {
       prompt = "📁 Dirs> ",
       winopts = { 
@@ -418,8 +445,7 @@ vim.keymap.set("n", "<leader>d", function()
           local dir = sel[1]
           require("oil").open(dir)
         end
-      }
-    }
+      } }
   )
 end, { desc = "Open directory in Oil" })
 
@@ -433,6 +459,7 @@ local file_win_opts = {
         border = "none"
     },
 }
+
 require("fzf-lua").setup({
     defaults = {
         formatter = "path.filename_first",
@@ -693,3 +720,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
+vim.schedule(function()
+  vim.cmd("colorscheme crusx-paper")
+end)

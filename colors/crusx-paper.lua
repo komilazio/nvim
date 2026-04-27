@@ -1,28 +1,30 @@
-vim.cmd('highlight clear')
-vim.g.colors_name = 'crusx-paper'
+vim.cmd("highlight clear")
+vim.cmd("syntax reset")
+vim.g.colors_name = "crusx-paper"
 
 -- TODO(lazio): Put in real "dust" particle or whatever
 --
 
 local color = {
-    fg = "#8D887E",
+    fg = "#7E7763",
     bg = "#111111",
     bg_float = "#181819",
-    comment = "#665B5B",
-    cursor_line = "#240501",
+    comment = "#4B4A3C",
+    cursor_line = "#58030C",
     keyword = "#C99619",
-    number = "#677522",
+    number = "#8F6B4C",
     todo = "#C73C20",
     search = "#A8FF4A",
+    code = "#180122",
     in_search = "#9D62D3",
-    visual = "#0D0013",
+    visual = "#510974",
     func = "#B14B25",
-    builtin = "#2E7465",
+    builtin = "#20554A",
     seperator = "#151516",
     sign_column = "#2A2D33",
     tab = "#458F2C",
     tab_off = "#193F0C",
-    string = "#515C1B",
+    string = "#6B791F",
 } 
 
 local function hi(group, opts)
@@ -177,7 +179,7 @@ hi('RenderMarkdownH2Bg',  { bg = color.bg_float })
 hi('RenderMarkdownH3Bg',  { bg = color.bg_float })
 hi('RenderMarkdownH4Bg',  { bg = color.bg_float })
 hi('RenderMarkdownCode',  { bg = color.bg })
-hi('RenderMarkdownCodeInline', { bg = color.visual })
+hi('RenderMarkdownCodeInline', { bg = color.code })
 hi('RenderMarkdownBullet', { fg = color.func })
 hi('RenderMarkdownTableHead', { fg = color.builtin })
 hi('RenderMarkdownTableRow',  { fg = color.func })
@@ -188,36 +190,50 @@ hi('@markup.heading.1.markdown', { fg = color.func })
 hi('@markup.heading.2.markdown', { fg = color.search })
 hi('@markup.heading.3.markdown', { fg = color.in_search })
 hi('@markup.heading.4.markdown', { fg = color.tab })
-hi('@markup.raw.markdown_inline', { bg = color.visual })
+hi('@markup.raw.markdown_inline', { bg = color.code })
 hi('@text.literal.markdown',       { fg = color.fg })
 hi('@text.uri',           { fg = color.keyword, underline = true })
 hi('@text.reference',     { fg = color.keyword, italic = false })
-hi('@markup.raw.block.markdown',     { fg = color.keyword, bg = color.visual, italic = false })
+hi('@markup.raw.block.markdown',     { fg = color.keyword, bg = color.code, italic = false })
 hi('@markup.quote.markdown',     { fg = color.keyword, bg = color.bg })
 hi('@markup.punctuation.markdown',     { fg = color.builtin, bg = color.bg })
 hi('@markup.link.markdown_inline',     { fg = color.builtin, bg = color.bg })
 hi('@markup.link.url.markdown_inline',     { fg = color.builtin, bg = color.bg })
 hi('@markup.link.label.markdown_inline',     { fg = color.builtin, bg = color.bg, italic = true })
-hi('@label.markdown',     { fg = color.keyword, bg = color.visual, italic = false })
+hi('@label.markdown',     { fg = color.keyword, bg = color.code, italic = false })
 
 hi('PERF',      { fg = '#62A3A8', bold = false })
 hi('NOTE',      { fg = '#8CA31E', bold = false })
 hi('FIXME',      { fg = '#C73C20', bold = false })
 hi('TODO',      { fg = '#C73C20', bold = false })
 
-vim.cmd([[
-autocmd BufRead,BufNewFile * call matchadd('Perf', '\<PERF\>')
-autocmd BufRead,BufNewFile * call matchadd('Note', '\<NOTE\>')
-autocmd BufRead,BufNewFile * call matchadd('Fixme', '\<FIXME\>')
-autocmd BufRead,BufNewFile * call matchadd('TODO', '\<TODO\>')
-]])
+-- vim.cmd([[
+-- autocmd BufRead,BufNewFile * call matchadd('Perf', '\<PERF\>')
+-- autocmd BufRead,BufNewFile * call matchadd('Note', '\<NOTE\>')
+-- autocmd BufRead,BufNewFile * call matchadd('Fixme', '\<FIXME\>')
+-- autocmd BufRead,BufNewFile * call matchadd('TODO', '\<TODO\>')
+-- ]])
 
+
+vim.api.nvim_create_augroup("CrusxTheme", { clear = true })
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  group = "CrusxTheme",
+  pattern = "*",
+  callback = function()
+    vim.fn.matchadd('Perf', '\\<PERF\\>')
+    vim.fn.matchadd('Note', '\\<NOTE\\>')
+    vim.fn.matchadd('Fixme', '\\<FIXME\\>')
+    vim.fn.matchadd('TODO', '\\<TODO\\>')
+  end,
+})
 
 vim.api.nvim_set_hl(0, 'ModesDefaultCursor', {bg = "#ff5400", fg = "#000000"})
 vim.api.nvim_set_hl(0, 'ModesVisualVisual', {bg = "#310147"})
-
 -- vim.api.nvim_set_hl(0, 'ModesDefaultCursor', {bg = "#ff5400", fg = "#000000"})
-vim.api.nvim_set_hl(0, 'ModesInsertCursorLine', {fg = color.fg})
+vim.api.nvim_set_hl(0, 'ModesInsertCursorLine', {fg = color.fg })
+
+
 
 -- FZFLua
 vim.env.FZF_DEFAULT_OPTS = "--color=bg:#151516"
@@ -259,3 +275,4 @@ else
     vim.g.terminal_color_15 = color.func
 
 end
+
