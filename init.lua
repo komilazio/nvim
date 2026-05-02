@@ -46,9 +46,6 @@ vim.keymap.set("n", "<leader>k", "<cmd>bdelete!<CR>", { desc = "Delete Current B
 -- vim.keymap.set("v", "<leader>d", "\"_d")
 
 vim.keymap.set("n", "<M-t>", ":terminal<CR>", { noremap = true, silent = true})
--- vim.keymap.set("n", "<M-h>", "<C-\\><C-N>:tabprevious<CR>", { noremap = true, silent = true})
--- vim.keymap.set("n", "<M-l>", "<C-\\><C-N>:tabnext<CR>", {silent = true})
--- vim.keymap.set("i", "<M-k>", "<nop>")
 vim.keymap.set("i", "<M-h>", "<nop>")
 vim.keymap.set("i", "<M-l>", "<nop>")
 vim.keymap.set("i", "<M-j>", "<nop>")
