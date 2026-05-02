@@ -3,29 +3,31 @@ vim.cmd("syntax reset")
 vim.g.colors_name = "crusx-paper"
 
 -- TODO(lazio): Put in real "dust" particle or whatever
---
+-- NOTE
 
 local color = {
-    fg = "#7E7763",
-    bg = "#111111",
+    fg = "#83725B",
+    bg = "#181818",
     bg_float = "#181819",
     comment = "#4B4A3C",
     cursor_line = "#58030C",
-    keyword = "#C99619",
+    -- keyword = "#C99619",
+    keyword = "#BD9943",
     number = "#8F6B4C",
     todo = "#C73C20",
     search = "#A8FF4A",
     code = "#180122",
     in_search = "#9D62D3",
     visual = "#510974",
-    func = "#B14B25",
-    builtin = "#20554A",
+    func = "#A85C3E",
+    builtin = "#45776D",
     seperator = "#151516",
     sign_column = "#2A2D33",
     tab = "#458F2C",
     tab_off = "#193F0C",
-    string = "#6B791F",
-} 
+    string = "#645568",
+    color_column = "#313641"
+}
 
 local function hi(group, opts)
   vim.api.nvim_set_hl(0, group, opts)
@@ -36,12 +38,15 @@ hi('Normal',       { fg = color.fg, bg = color.bg })
 hi('NormalNC',     { fg = color.fg, bg = color.bg })
 hi('NormalFloat',  { fg = color.fg, bg = color.bg_float })
 hi('FloatTitle',   { fg = color.fg, bg = color.bg, bold = false })
+hi('FloatBorder',  { fg = color.fg, bg = color.bg })
 hi('lCursor',      { fg = color.fg, bg = color.bg })
 hi('Title',        { fg = color.comment, bg = color.bg })
 hi('CursorIM',     { fg = color.fg, bg = color.bg })
-hi('TermCursor',   { fg = color.fg, bg = color.bg })
+hi('ColorColumn',  { bg = color.color_column })
+hi('TermCursor',   { fg = color.fg, bg = color.tab })
 hi('TermCursorNC', { fg = color.fg, bg = color.bg })
 hi('CursorLine',   { bg = color.cursor_line,  bold = false})
+-- hi('CursorLine',   { bg = color.cursor_line,  bold = false})
 hi('StatusLine',   { bg = color.bg, bold = false })
 hi('Search',       { fg = color.in_search, bold = false })
 hi('IncSearch',    { fg = color.search, bold = false })
@@ -228,51 +233,5 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   end,
 })
 
-vim.api.nvim_set_hl(0, 'ModesDefaultCursor', {bg = "#ff5400", fg = "#000000"})
-vim.api.nvim_set_hl(0, 'ModesVisualVisual', {bg = "#310147"})
--- vim.api.nvim_set_hl(0, 'ModesDefaultCursor', {bg = "#ff5400", fg = "#000000"})
-vim.api.nvim_set_hl(0, 'ModesInsertCursorLine', {fg = color.fg })
-
-
-
 -- FZFLua
 vim.env.FZF_DEFAULT_OPTS = "--color=bg:#151516"
-
--- Neovide Terminal Colors
-if vim.g.neovide then
-    vim.g.terminal_color_0  = color.builtin
-    vim.g.terminal_color_1  = color.todo
-    vim.g.terminal_color_2  = color.builtin
-    vim.g.terminal_color_3  = color.builtin 
-    vim.g.terminal_color_4  = color.keyword
-    vim.g.terminal_color_5  = color.number
-    vim.g.terminal_color_6  = color.number 
-    vim.g.terminal_color_7  = color.func
-    vim.g.terminal_color_8  = color.comment
-    vim.g.terminal_color_9  = color.func
-    vim.g.terminal_color_10 = color.func
-    vim.g.terminal_color_11 = color.func
-    vim.g.terminal_color_12 = color.builtin 
-    vim.g.terminal_color_13 = color.func
-    vim.g.terminal_color_14 = color.func
-    vim.g.terminal_color_15 = color.func
-else
-    vim.g.terminal_color_0  = color.builtin
-    vim.g.terminal_color_1  = color.todo
-    vim.g.terminal_color_2  = color.builtin
-    vim.g.terminal_color_3  = color.builtin 
-    vim.g.terminal_color_4  = color.keyword
-    vim.g.terminal_color_5  = color.number
-    vim.g.terminal_color_6  = color.number 
-    vim.g.terminal_color_7  = color.func
-    vim.g.terminal_color_8  = color.comment
-    vim.g.terminal_color_9  = color.func
-    vim.g.terminal_color_10 = color.func
-    vim.g.terminal_color_11 = color.func
-    vim.g.terminal_color_12 = color.builtin 
-    vim.g.terminal_color_13 = color.func
-    vim.g.terminal_color_14 = color.func
-    vim.g.terminal_color_15 = color.func
-
-end
-
