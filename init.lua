@@ -37,13 +37,15 @@ vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 vim.keymap.set("n", "-", "$")
 vim.keymap.set("v", "-", "$")
+-- vim.keymap.set("n", "<leader>d", "\"_d")
+-- vim.keymap.set("v", "<leader>d", "\"_d")
 -- vim.keymap.set("x", "<leader>p", "\"_dp")
 vim.keymap.set("n", "<leader>y", "\"+y")
 vim.keymap.set("v", "<leader>y", "\"+y")
 vim.keymap.set("n", "<leader>o", "<cmd>only<CR>", { desc = "Delete Current Buffer", silent = true})
 vim.keymap.set("n", "<leader>k", "<cmd>bdelete!<CR>", { desc = "Delete Current Buffer", silent = true})
--- vim.keymap.set("n", "<leader>d", "\"_d")
--- vim.keymap.set("v", "<leader>d", "\"_d")
+vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv", { desc = "Move Block Down" })
+vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move Block Up" })
 
 vim.keymap.set("n", "<M-t>", ":terminal<CR>", { noremap = true, silent = true})
 vim.keymap.set("i", "<M-h>", "<nop>")
@@ -364,48 +366,49 @@ require("oil").setup({
 vim.keymap.set("n", "<leader>e", "<cmd>Oil<CR>")
 -- Save cwd per buffer
 vim.keymap.set("n", "<leader>h", function()
-  local oil = require("oil")
-  local dir = oil.get_current_dir()
+      local oil = require("oil")
+      local dir = oil.get_current_dir()
 
-  if not dir then
-    print("Not inside Oil")
-    return
-  end
-  -- Save directory to current buffer
-  vim.b.local_cwd = dir
-  -- Apply window-local cwd
-  vim.cmd("lcd " .. vim.fn.fnameescape(dir))
-  print("Buffer cwd -> " .. dir)
+      if not dir then
+            print("Not inside Oil")
+            return
+      end
+      -- Save directory to current buffer
+      vim.b.local_cwd = dir
+      -- Apply window-local cwd
+      vim.cmd("lcd " .. vim.fn.fnameescape(dir))
+      print("Buffer cwd -> " .. dir)
 end, { desc = "Set buffer cwd from Oil" })
 -- Restore cwd when entering buffers
 vim.api.nvim_create_autocmd("BufEnter", {
-  callback = function(args)
-    local cwd = vim.b[args.buf].local_cwd
+      callback = function(args)
+            local cwd = vim.b[args.buf].local_cwd
 
-    if cwd then
-      vim.cmd("lcd " .. vim.fn.fnameescape(cwd))
-    end
-  end,
+            if cwd then
+                  vim.cmd("lcd " .. vim.fn.fnameescape(cwd))
+            end
+      end,
 })
 -- Ensure terminals inherit current window cwd
 vim.api.nvim_create_autocmd("TermOpen", {
-  callback = function()
-    local cwd = vim.fn.getcwd(0)
-    vim.cmd("lcd " .. vim.fn.fnameescape(cwd))
-  end,
+      callback = function()
+            local cwd = vim.fn.getcwd(0)
+            vim.cmd("lcd " .. vim.fn.fnameescape(cwd))
+      end,
 })
 
 vim.lsp.enable({
-    "rust_analyzer",
-    "ols",
-    "luals",
-    "clangd",
+      "rust_analyzer",
+      "ols",
+      "luals",
+      "clangd",
 })
 vim.diagnostic.config({ virtual_text = true })
 vim.keymap.set("n", "<leader>m", function()
-    vim.diagnostic.open_float(nil, { focus = false })
+      vim.diagnostic.open_float(nil, { focus = false })
 end, {desc = "View Diagnostics Error",
 noremap = true})
+
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(args)
         vim.keymap.set('n', '<leader>gd',  vim.lsp.buf.definition,     { buffer = args.buf })

@@ -8,7 +8,7 @@ vim.g.colors_name = "crusx-paper"
 local color = {
     fg = "#83725B",
     bg = "#181818",
-    bg_float = "#181819",
+    bg_float = "#141414",
     comment = "#4B4A3C",
     cursor_line = "#58030C",
     -- keyword = "#C99619",
@@ -147,7 +147,7 @@ hi('@punctuation.delimiter',  { fg = color.fg,  bold = false })
 hi('@punctuation.special',    { fg = color.fg,  bold = false })
 hi('@comment',            { fg = color.comment, italic = false,  bold = false })
 hi('@comment.documentation', { fg = color.comment, italic = false,  bold = false })
-hi('@tag',                { fg = color.builtin,  bold = false,  bold = false })
+hi('@tag',                { fg = color.builtin, bold = false })
 hi('@tag.attribute',      { fg = color.fg, italic = false,  bold = false })
 hi('@tag.delimiter',      { fg = color.fg,  bold = false })
 hi('@text',               { fg = color.fg,  bold = false })
