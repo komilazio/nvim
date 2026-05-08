@@ -1,3 +1,27 @@
+-- Automatically start a server for nvr
+if vim.fn.empty(vim.v.servername) > 0 then
+      vim.fn.serverstart(vim.fn.stdpath("cache") .. "/nvim-server")
+end
+vim.g.nvim_remote_open = "tab"
+
+
+vim.api.nvim_create_autocmd("BufEnter", {
+  -- group = group,
+  pattern = "*.md",
+  command = "TableModeEnable",
+})
+
+vim.api.nvim_create_autocmd("BufLeave", {
+  -- group = group,
+  pattern = "*.md",
+  command = "TableModeDisable",
+})
+
+vim.opt.timeout = true
+vim.opt.timeoutlen = 50
+vim.opt.ttimeout = true
+vim.opt.ttimeoutlen = 1
+
 vim.cmd("colorscheme crusx-paper")
 vim.g.mapleader = " "
 vim.o.winborder = "rounded"
@@ -5,16 +29,18 @@ vim.opt.laststatus = 3
 vim.opt.tabstop = 6
 vim.opt.shiftwidth = 6
 vim.opt.showmode = false
+vim.opt.showtabline = 2
+vim.opt.cursorline = true
 vim.opt.scrolloff = 9
 vim.opt.termguicolors = true
 vim.opt.expandtab = true
+vim.opt.guifont = "UbuntuMono Nerd Font:h11.5"
 -- vim.opt.number = true
 -- vim.opt.relativenumber = true
 -- vim.opt.virtualedit = "all"
 -- vim.opt.colorcolumn = "80"
 vim.opt.smartindent = true
 vim.g.rust_recommended_style = false
--- vim.opt.signcolumn = "yes:1"
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
 vim.opt.backup = false
@@ -41,6 +67,10 @@ vim.keymap.set("v", "-", "$")
 -- vim.keymap.set("n", "<leader>d", "\"_d")
 -- vim.keymap.set("v", "<leader>d", "\"_d")
 -- vim.keymap.set("x", "<leader>p", "\"_dp")
+vim.keymap.set("n", "<C-S-v>", '"+p')
+vim.keymap.set("i", "<C-S-v>", '<C-r>+')
+vim.keymap.set("c", "<C-S-v>", '<C-r>+')
+vim.keymap.set("t", "<C-S-v>", [[<C-\><C-N>"+pi]], { noremap = true })
 vim.keymap.set("n", "<leader>y", "\"+y")
 vim.keymap.set("v", "<leader>y", "\"+y")
 vim.keymap.set("n", "<leader>o", "<cmd>only<CR>", { desc = "Delete Current Buffer", silent = true})
@@ -48,7 +78,15 @@ vim.keymap.set("n", "<leader>k", "<cmd>bdelete!<CR>", { desc = "Delete Current B
 vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv", { desc = "Move Block Down" })
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move Block Up" })
 
-vim.keymap.set("n", "<M-t>", ":terminal<CR>", { noremap = true, silent = true})
+vim.keymap.set("n", "<M-t>", function()
+      vim.cmd("tabnew")
+      vim.cmd("terminal")
+end,
+{ noremap = true, silent = true})
+vim.keymap.set("n", "<M-h>", ":tabprevious<CR>", {silent = true})
+vim.keymap.set("n", "<M-l>", ":tabnext<CR>", {silent = true})
+vim.keymap.set("t", "<M-h>", "<C-\\><C-n>:tabprevious<CR>", {silent = true})
+vim.keymap.set("t", "<M-l>", "<C-\\><C-n>:tabnext<CR>", {silent = true})
 vim.keymap.set("i", "<M-h>", "<nop>")
 vim.keymap.set("i", "<M-l>", "<nop>")
 vim.keymap.set("i", "<M-j>", "<nop>")
@@ -56,12 +94,11 @@ vim.keymap.set("n", "<leader>u", ":UndotreeToggle<CR>", {noremap = true, silent 
 vim.pack.add({
       "https://github.com/nvim-lua/plenary.nvim",
       "https://github.com/folke/flash.nvim",
-      "https://github.com/folke/flash.nvim",
       "https://github.com/lambdalisue/vim-suda",
       "https://github.com/mason-org/mason.nvim",
       "https://github.com/saghen/blink.cmp",
       "https://github.com/ibhagwan/fzf-lua",
-      "https://github.com/sindrets/winshift.nvim",
+      -- "https://github.com/sindrets/winshift.nvim",
       "https://github.com/stevearc/oil.nvim",
       "https://github.com/folke/which-key.nvim",
       "https://github.com/nvim-mini/mini.icons",
@@ -70,22 +107,23 @@ vim.pack.add({
       "https://github.com/dhruvasagar/vim-table-mode",
       "https://github.com/ej-shafran/compile-mode.nvim",
       "https://github.com/mbbill/undotree",
-      "https://github.com/jpwol/thorn.nvim",
+      -- Debug
+      "https://codeberg.org/mfussenegger/nvim-dap",
+      "https://github.com/rcarriga/nvim-dap-ui",
+      "https://github.com/nvim-neotest/nvim-nio",
+      "https://github.com/theHamsta/nvim-dap-virtual-text",
 })
--- after plugin is loaded by your manager
--- vim.cmd([[colorscheme thorn]])
 
 require("mini.icons").setup()
 -- require('lualine').setup()
 require("which-key").setup({ })
 require("mason").setup({ })
-require("winshift").setup()
+-- require("winshift").setup()
 ---@module "compile-mode"
 ---@type CompileModeOpts
 vim.g.compile_mode = {
       -- The string to show in the compile prompt as a default.
       -- For an empty prompt, you can use:
-      default_command = "",
       -- To use different defaults based on filetype, you can use a table:
       default_command = {
             python = "python %",
@@ -121,12 +159,11 @@ require('render-markdown').setup({
       },
 })
 
--- Open Directory in Oil using fzf-lua
 vim.keymap.set("n", "<leader>sp", function()
       require("fzf-lua").fzf_exec(
             "fd --type d --hidden --exclude .git . /",
             {
-                  prompt = "📁 Dirs> ",
+                  prompt = "📁 |> ",
                   winopts = {
                         fullscreen = true,
                         border = "none",
@@ -135,12 +172,15 @@ vim.keymap.set("n", "<leader>sp", function()
                   actions = {
                         ["enter"] = function(sel)
                               local dir = sel[1]
+                              vim.cmd("tabnew")
+                              -- IMPORTANT: set tab-local cwd
+                              vim.cmd("tcd " .. vim.fn.fnameescape(dir))
                               require("oil").open(dir)
                         end
-                  } }
-            )
-      end, { desc = "Open directory in Oil" }
-)
+                  }
+            }
+      )
+end, { desc = "Open directory in Oil" })
 
 -- FZF-LUA
 local file_win_opts = {
@@ -172,10 +212,11 @@ require("fzf-lua").setup({
 -- { desc="Find files in the current working directory", noremap = true, silent = true})
 -- vim.keymap.set("n", "<leader>f", "<cmd>lua FzfLua.files({ cwd = '~/' })<CR>",
 vim.keymap.set("n", "<leader>f", "<cmd>lua FzfLua.files()<CR>",
-{ desc="Find files from the home directory", noremap = true, silent = true})
+{ desc="Find files from the current working directory", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>/", "<cmd>lua FzfLua.files({ cwd = '/' })<CR>",
 { desc="Find files the system directory", noremap = true, silent = true})
-vim.keymap.set("n", "<leader>b", "<cmd>FzfLua buffers<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "<leader>b", "<cmd>FzfLua buffers<CR>", { noremap = true, silent = true })
+
 vim.keymap.set("n", "<C-g>", "<cmd>FzfLua grep<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>l", "<cmd>FzfLua grep_project<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n", "x", "o"}, "s", function() require("flash").jump() end, { desc = "Flash"})
@@ -218,18 +259,12 @@ vim.api.nvim_create_autocmd("TextYankPost", {
             vim.highlight.on_yank()
       end,
 })
--- vim.api.nvim_create_autocmd("User", {
---       pattern = { "OilEnter", "OilDirChanged" },
---       callback = function(event)
---             vim.defer_fn(function()
---                   local oil = require("oil")
---                   local dir = oil.get_current_dir()
---                   if dir then
---                         vim.cmd("lcd " .. dir)
---                   end
---             end, 20) -- delay a few ms so Oil finishes updating
---       end,
--- })
+
+local dap = require("dap")
+local dapui = require("dapui")
+
+require("dapui").setup()
+
 require("oil").setup({
       default_file_explorer = true,
       columns = {
@@ -270,7 +305,7 @@ require("oil").setup({
             ["<C-h>"] = { "actions.select", opts = { horizontal = true } },
             ["<C-t>"] = { "actions.select", opts = { tab = true } },
             ["<C-p>"] = "actions.preview",
-            -- ["<q>"] = { "actions.close", mode = "n" },
+            ["<M-q>"] = { "actions.close", mode = "n" },
             ["<M-k>"] = "actions.refresh",
             ["-"] = { "actions.parent", mode = "n" },
             ["_"] = { "actions.open_cwd", mode = "n" },
@@ -369,42 +404,40 @@ require("oil").setup({
       },
 })
 vim.keymap.set("n", "<leader>e", "<cmd>Oil<CR>")
--- Save cwd per buffer
-vim.keymap.set("n", "<leader>h", function()
-      local oil = require("oil")
-      local dir = oil.get_current_dir()
-
-      if not dir then
-            print("Not inside Oil")
-            return
-      end
-      -- Save directory to current buffer
-      vim.b.local_cwd = dir
-      -- Apply window-local cwd
-      vim.cmd("lcd " .. vim.fn.fnameescape(dir))
-      print("Buffer cwd -> " .. dir)
-end, { desc = "Set buffer cwd from Oil" })
--- Restore cwd when entering buffers
-vim.api.nvim_create_autocmd("BufEnter", {
-      callback = function(args)
-            local cwd = vim.b[args.buf].local_cwd
-
-            if cwd then
-                  vim.cmd("lcd " .. vim.fn.fnameescape(cwd))
-            end
-      end,
-})
 -- Ensure terminals inherit current window cwd
 vim.api.nvim_create_autocmd("TermOpen", {
       callback = function()
             local cwd = vim.fn.getcwd(0)
-            vim.cmd("lcd " .. vim.fn.fnameescape(cwd))
+            vim.cmd("tcd " .. vim.fn.fnameescape(cwd))
       end,
 })
 
--- Eviline config for lualine
--- Author: shadmansaleh
--- Credit: glepnir
+vim.api.nvim_create_autocmd("TermOpen", {
+      callback = function()
+            local cwd = vim.fn.getcwd(0)
+            vim.cmd("tcd " .. vim.fn.fnameescape(cwd))
+      end,
+})
+
+vim.api.nvim_create_autocmd("InsertEnter", {
+      callback = function()
+            vim.cmd("highlight CursorLine guibg=#14310A")
+      end,
+})
+vim.api.nvim_create_autocmd("InsertLeave", {
+      callback = function()
+            vim.cmd("highlight Cursor guibg=#008080")
+            vim.cmd("highlight CursorLine guibg=#300207")
+      end,
+})
+
+-- Ensure terminals inherit current window cwd
+vim.api.nvim_create_autocmd("VimEnter", {
+      callback = function()
+            vim.cmd(":terminal")
+      end,
+})
+
 local lualine = require('lualine')
 -- Color table for highlights
 -- stylua: ignore
@@ -444,7 +477,7 @@ local config = {
                   -- We are going to use lualine_c an lualine_x as left and
                   -- right section. Both are highlighted by c theme .  So we
                   -- are just setting default looks o statusline
-                  normal = { c = { fg = colors.fg, bg = "#181818"  } }, --colors.bg
+                  normal = { c = { fg = colors.fg, bg = "#141414"  } }, --colors.bg
                   inactive = { c = { fg = colors.fg, bg = colors.bg } },
             },
       },
@@ -482,7 +515,7 @@ local the_bar = function ()
 ins_left {
       function()
             -- Mode indicator
-            return "▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰"
+            return "▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰"
       end,
       -- color = { fg = "#008080" },
       color = function()
@@ -518,7 +551,6 @@ end
 ins_left {
       function()
            return "⟦⟪⟫⟧"
-            -- return "▞▚"
       end,
       color = { fg = "#9D62D3" },
       padding = { left = 0, right = 1 }, -- We don't need space before this
@@ -528,11 +560,11 @@ ins_left {
       'filesize',
       cond = conditions.buffer_not_empty,
 }
-ins_left {
-      'filename',
-      cond = conditions.buffer_not_empty,
-      color = { fg = colors.yellow },
-}
+-- ins_left {
+--       'filename',
+--       cond = conditions.buffer_not_empty,
+--       color = { fg = colors.yellow },
+-- }
 
 ins_left { 'location' }
 

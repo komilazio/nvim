@@ -3,15 +3,14 @@ vim.cmd("syntax reset")
 vim.g.colors_name = "crusx-paper"
 
 -- TODO(lazio): Put in real "dust" particle or whatever
--- NOTE
+-- NOTE this is just a comment adjustment
 
 local color = {
-    fg = "#83725B",
-    bg = "#181818",
-    bg_float = "#141414",
+    fg = "#AAA091",
+    bg = "#141414",
+    bg_float = "#101010",
     comment = "#4B4A3C",
-    cursor_line = "#58030C",
-    -- keyword = "#C99619",
+    cursor_line = "#300207",
     keyword = "#BD9943",
     number = "#8F6B4C",
     todo = "#C73C20",
@@ -19,13 +18,13 @@ local color = {
     code = "#180122",
     in_search = "#9D62D3",
     visual = "#510974",
-    func = "#A85C3E",
+    func = "#CE6203",
     builtin = "#45776D",
     seperator = "#151516",
-    sign_column = "#2A2D33",
+    sign_column = "#000000",
     tab = "#458F2C",
     tab_off = "#193F0C",
-    string = "#645568",
+    string = "#7F6B85",
     color_column = "#313641"
 }
 
@@ -58,9 +57,9 @@ hi('MatchParen',   { fg = color.search, bold = false, underline = true })
 hi('Visual',       { bg = color.visual })
 hi('WinSeparator', { fg = color.seperator, bg = color.bg })
 hi('SignColumn',   { bg = color.seperator })
-hi('TabLine',      { fg = color.fg, bg = color.tab_off })
-hi('TabLineFill',  { fg = color.fg, bg = color.bg })
-hi('TabLineSel',   { bg = color.tab, fg = color.cursor_line })
+hi('TabLine',      { fg = color.comment, bg = color.bg })
+-- hi('TabLineFill',  { fg = color.fg, bg = color.bg })
+hi('TabLineSel',   { bg = color.bg, fg = "#FF8800", bold = true })
 
 -- Syntax: monotone with decoration
 hi('Comment',      { fg = color.comment, italic = false,  bold = false })
@@ -235,3 +234,21 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 
 -- FZFLua
 vim.env.FZF_DEFAULT_OPTS = "--color=bg:#151516"
+
+vim.g.terminal_color_0  = color.bg
+vim.g.terminal_color_1  = color.todo
+vim.g.terminal_color_2  = color.tab
+vim.g.terminal_color_3  = color.keyword
+vim.g.terminal_color_4  = color.func
+vim.g.terminal_color_5  = color.in_search
+vim.g.terminal_color_6  = color.builtin
+vim.g.terminal_color_7  = color.fg
+
+vim.g.terminal_color_8  = color.comment
+vim.g.terminal_color_9  = color.todo
+vim.g.terminal_color_10 = color.tab
+vim.g.terminal_color_11 = color.search
+vim.g.terminal_color_12 = color.func
+vim.g.terminal_color_13 = color.visual
+vim.g.terminal_color_14 = color.builtin
+vim.g.terminal_color_15 = color.fg
