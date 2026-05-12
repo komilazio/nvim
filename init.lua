@@ -1,21 +1,54 @@
 -- Automatically start a server for nvr
-if vim.fn.empty(vim.v.servername) > 0 then
-      vim.fn.serverstart(vim.fn.stdpath("cache") .. "/nvim-server")
+-- if vim.fn.empty(vim.v.servername) > 0 then
+--       vim.fn.serverstart(vim.fn.stdpath("cache") .. "/nvim-server")
+-- end
+-- vim.g.nvim_remote_open = "tab"
+
+-- creates somne fancy tabs [n] bufname
+function _G.MyTabLine()
+  local s = ""
+
+  for i = 1, vim.fn.tabpagenr("$") do
+    local winnr = vim.fn.tabpagewinnr(i)
+    local buflist = vim.fn.tabpagebuflist(i)
+    local bufnr = buflist[winnr]
+    local bufname = vim.fn.bufname(bufnr)
+
+    if bufname == "" then
+      bufname = "[No Name]"
+    else
+      bufname = vim.fn.fnamemodify(bufname, ":t")
+    end
+
+    if i == vim.fn.tabpagenr() then
+      s = s .. "%#TabLineSel#"
+    else
+      s = s .. "%#TabLine#"
+    end
+
+    s = s .. " [" .. i .. "] " .. bufname .. " "
+  end
+
+  s = s .. "%#TabLineFill#"
+
+  return s
 end
-vim.g.nvim_remote_open = "tab"
 
-
-vim.api.nvim_create_autocmd("BufEnter", {
-  -- group = group,
-  pattern = "*.md",
-  command = "TableModeEnable",
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "markdown",
+    callback = function()
+        vim.b.table_mode_active = true
+        vim.cmd("silent! TableModeEnable")
+    end,
 })
 
-vim.api.nvim_create_autocmd("BufLeave", {
-  -- group = group,
-  pattern = "*.md",
-  command = "TableModeDisable",
-})
+vim.keymap.set('n', '<C-=>', ":let g:neovide_scale_factor = g:neovide_scale_factor + 0.1<CR>")
+vim.keymap.set('n', '<C-->', ":let g:neovide_scale_factor = g:neovide_scale_factor - 0.1<CR>")
+vim.keymap.set('n', '<C-0>', ":let g:neovide_scale_factor = 1<CR>")
+
+vim.g.neovide_scroll_animation_length = 0.1
+vim.g.neovide_cursor_animation_length = 0.005
+vim.g.neovide_cursor_vfx_mode = "railgun"
 
 vim.opt.timeout = true
 vim.opt.timeoutlen = 50
@@ -29,15 +62,17 @@ vim.opt.laststatus = 3
 vim.opt.tabstop = 6
 vim.opt.shiftwidth = 6
 vim.opt.showmode = false
+vim.opt.tabline = "%!v:lua.MyTabLine()"
 vim.opt.showtabline = 2
 vim.opt.cursorline = true
-vim.opt.scrolloff = 9
+vim.opt.scrollback = 1000000
+vim.opt.scrolloff = 999999
 vim.opt.termguicolors = true
 vim.opt.expandtab = true
 vim.opt.guifont = "UbuntuMono Nerd Font:h11.5"
 -- vim.opt.number = true
 -- vim.opt.relativenumber = true
--- vim.opt.virtualedit = "all"
+vim.opt.virtualedit = "all"
 -- vim.opt.colorcolumn = "80"
 vim.opt.smartindent = true
 vim.g.rust_recommended_style = false
@@ -74,15 +109,41 @@ vim.keymap.set("t", "<C-S-v>", [[<C-\><C-N>"+pi]], { noremap = true })
 vim.keymap.set("n", "<leader>y", "\"+y")
 vim.keymap.set("v", "<leader>y", "\"+y")
 vim.keymap.set("n", "<leader>o", "<cmd>only<CR>", { desc = "Delete Current Buffer", silent = true})
-vim.keymap.set("n", "<leader>k", "<cmd>bdelete!<CR>", { desc = "Delete Current Buffer", silent = true})
+-- vim.keymap.set("n", "<leader>k", "<cmd>bdelete!<CR>", { desc = "Delete Current Buffer", silent = true})
+vim.keymap.set("n", "<leader>k", "<cmd>close<CR>", { desc = "Close the current window", silent = true})
 vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv", { desc = "Move Block Down" })
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move Block Up" })
+
+vim.keymap.set("n", "<leader>b", function()
+      local dir = vim.fn.expand("%:p:h")
+      vim.fn.termopen(vim.o.shell, { cwd = dir })
+end, {
+desc = "open terminal in current file directory",
+noremap = true,
+silent = true,
+})
+
+vim.keymap.set("n", "<leader>0", function()
+      vim.cmd("cd " .. vim.fn.expand("~"))
+      vim.cmd("restart")
+end, {
+desc = "restart neovim in home dir",
+noremap = true,
+silent = true,
+})
 
 vim.keymap.set("n", "<M-t>", function()
       vim.cmd("tabnew")
       vim.cmd("terminal")
+end, { noremap = true, silent = true})
+
+
+vim.keymap.set("n", "<C-t>", function()
+      vim.cmd("vs")
+      vim.cmd("terminal")
 end,
 { noremap = true, silent = true})
+
 vim.keymap.set("n", "<M-h>", ":tabprevious<CR>", {silent = true})
 vim.keymap.set("n", "<M-l>", ":tabnext<CR>", {silent = true})
 vim.keymap.set("t", "<M-h>", "<C-\\><C-n>:tabprevious<CR>", {silent = true})
@@ -161,26 +222,35 @@ require('render-markdown').setup({
 
 vim.keymap.set("n", "<leader>sp", function()
       require("fzf-lua").fzf_exec(
-            "fd --type d --hidden --exclude .git . /",
+            "fd --type f --hidden --exclude .git . /",
             {
                   prompt = "📁 |> ",
                   winopts = {
                         fullscreen = true,
                         border = "none",
                   },
+
                   previewer = false,
+
                   actions = {
-                        ["enter"] = function(sel)
-                              local dir = sel[1]
+                        ["default"] = function(selected)
+                              local file = selected[1]
+
+                              if not file then
+                                    return
+                              end
+
+                              local dir = vim.fn.fnamemodify(file, ":h")
+
                               vim.cmd("tabnew")
-                              -- IMPORTANT: set tab-local cwd
                               vim.cmd("tcd " .. vim.fn.fnameescape(dir))
+
                               require("oil").open(dir)
-                        end
-                  }
+                        end,
+                  },
             }
       )
-end, { desc = "Open directory in Oil" })
+end, { desc = "Open file directory in Oil" })
 
 -- FZF-LUA
 local file_win_opts = {
@@ -269,8 +339,8 @@ require("oil").setup({
       default_file_explorer = true,
       columns = {
             "icon",
-            "permissions",
-            "size",
+            -- "permissions",
+            -- "size",
             -- "mtime",
       },
       buf_options = {
@@ -419,17 +489,45 @@ vim.api.nvim_create_autocmd("TermOpen", {
       end,
 })
 
-vim.api.nvim_create_autocmd("InsertEnter", {
-      callback = function()
-            vim.cmd("highlight CursorLine guibg=#14310A")
-      end,
-})
-vim.api.nvim_create_autocmd("InsertLeave", {
-      callback = function()
-            vim.cmd("highlight Cursor guibg=#008080")
-            vim.cmd("highlight CursorLine guibg=#300207")
-      end,
-})
+-- vim.keymap.set("n", "<leader>h", function()
+--   local oil = require("oil")
+--   local dir = oil.get_current_dir()
+--       local oil = require("oil")
+--       local dir = oil.get_current_dir()
+--
+--   if not dir then
+--     print("Not inside Oil")
+--     return
+--   end
+--   -- Save directory to current buffer
+--   vim.b.local_cwd = dir
+--   -- Apply window-local cwd
+--   vim.cmd("lcd " .. vim.fn.fnameescape(dir))
+--   print("Buffer cwd -> " .. dir)
+--       if not dir then
+--             print("Not inside Oil")
+--             return
+--       end
+--       -- Save directory to current buffer
+--       vim.b.local_cwd = dir
+--       -- Apply window-local cwd
+--       vim.cmd("lcd " .. vim.fn.fnameescape(dir))
+--       print("Buffer cwd -> " .. dir)
+-- end, { desc = "Set buffer cwd from Oil" })
+
+-- vim.api.nvim_create_autocmd("InsertEnter", {
+--     callback = function()
+--         vim.wo.winhighlight = "CursorLine:InsertCursorLine"
+--         vim.cmd("highlight InsertCursorLine guifg=#AD9E86")
+--     end,
+-- })
+--
+-- vim.api.nvim_create_autocmd("InsertLeave", {
+--       callback = function()
+--             -- vim.wo.winhighlight = "CursorLine:NormalCursorLine"
+--             vim.cmd("highlight CursorLine guibg=#52010B guifg=NONE")
+--       end,
+-- })
 
 -- Ensure terminals inherit current window cwd
 vim.api.nvim_create_autocmd("VimEnter", {
@@ -477,7 +575,7 @@ local config = {
                   -- We are going to use lualine_c an lualine_x as left and
                   -- right section. Both are highlighted by c theme .  So we
                   -- are just setting default looks o statusline
-                  normal = { c = { fg = colors.fg, bg = "#141414"  } }, --colors.bg
+                  normal = { c = { fg = colors.fg, bg = "#181818"  } }, --colors.bg
                   inactive = { c = { fg = colors.fg, bg = colors.bg } },
             },
       },
@@ -510,43 +608,6 @@ local function ins_right(component)
       table.insert(config.sections.lualine_x, component)
 end
 
-local the_bar = function ()
-
-ins_left {
-      function()
-            -- Mode indicator
-            return "▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰"
-      end,
-      -- color = { fg = "#008080" },
-      color = function()
-            -- auto change color according to neovims mode
-            local mode_color = {
-                  n = colors.orange,
-                  i = "#09E717",
-                  v = "#510974",
-                  [''] = colors.blue,
-                  V = "#510974",
-                  c = "#FF0000",
-                  no = colors.red,
-                  s = colors.orange,
-                  S = colors.orange,
-                  [''] = colors.orange,
-                  ic = colors.yellow,
-                  R = colors.violet,
-                  Rv = colors.violet,
-                  cv = colors.red,
-                  ce = colors.red,
-                  r = colors.cyan,
-                  rm = colors.cyan,
-                  ['r?'] = colors.cyan,
-                  ['!'] = colors.red,
-                  t = colors.red,
-            }
-            return { fg = mode_color[vim.fn.mode()] }
-      end,
-      padding = { left = 2, right = 0 }, -- We don't need space before this
-}
-end
 
 ins_left {
       function()
@@ -560,11 +621,6 @@ ins_left {
       'filesize',
       cond = conditions.buffer_not_empty,
 }
--- ins_left {
---       'filename',
---       cond = conditions.buffer_not_empty,
---       color = { fg = colors.yellow },
--- }
 
 ins_left { 'location' }
 
@@ -581,10 +637,6 @@ ins_left {
       },
 }
 
-the_bar()
-
--- Insert mid section. You can make any number of sections in neovim :)
--- for lualine it's any number greater then 2
 ins_left {
       function()
             return '%='
@@ -698,3 +750,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- vim.keymap.set('i', '<M-l>',       vim.lsp.buf.signature_help, { buffer = args.buf })
     end,
 })
+
+
+
+-- color0   "#bbc2cf"
+-- color1   "#008080"
+-- color2   "#458F2C"
+-- color3   "#B8CC52"
+-- color4   "#E6B673"
+-- color5   "#FF7733"
+-- color6   "#C73C20"
+-- color7   "#A8FF4A"
+-- color8   "#9D62D3"
+-- color9   "#FFB454"
+-- --
