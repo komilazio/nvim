@@ -1,6 +1,6 @@
 vim.cmd("highlight clear")
 vim.cmd("syntax reset")
-vim.g.colors_name = "crusx-paper"
+vim.g.colors_name = "crusx-paper-light"
 
 
 -- TODO(lazio): Put in real "dust" particle or whatever
@@ -9,10 +9,10 @@ vim.g.colors_name = "crusx-paper"
 local color = {
     -- fg = "#AD9E86",
     fg = "#EBD3AC",
-    bg = "#101010",
-    bg_float = "#000000",
+    bg = "#200453",
+    bg_float = "#340453",
     comment = "#9E98A0",
-    cursor_line = "#202025",
+    -- cursor_line = "#202025",
     keyword = "#F3C505",
     number = "#C481FF",
     todo = "#C73C20",
@@ -22,8 +22,8 @@ local color = {
     visual = "#3A3E52",
     func = "#FC8D5C",
     builtin = "#45776D",
-    seperator = "#151516",
-    sign_column = "#000000",
+    seperator = "#340453",
+    sign_column = "#340453",
     tab = "#458F2C",
     bool = "#B6434B",
     tab_off = "#193F0C",

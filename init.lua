@@ -6,32 +6,39 @@
 
 -- creates somne fancy tabs [n] bufname
 function _G.MyTabLine()
-  local s = ""
+    local s = ""
 
-  for i = 1, vim.fn.tabpagenr("$") do
-    local winnr = vim.fn.tabpagewinnr(i)
-    local buflist = vim.fn.tabpagebuflist(i)
-    local bufnr = buflist[winnr]
-    local bufname = vim.fn.bufname(bufnr)
+    for i = 1, vim.fn.tabpagenr("$") do
+        local winnr = vim.fn.tabpagewinnr(i)
+        local buflist = vim.fn.tabpagebuflist(i)
+        local bufnr = buflist[winnr]
 
-    if bufname == "" then
-      bufname = "[No Name]"
-    else
-      bufname = vim.fn.fnamemodify(bufname, ":t")
+        local bufname = vim.fn.bufname(bufnr)
+
+        -- current working directory for this tab
+        local cwd = vim.fn.getcwd(-1, i)
+        cwd = vim.fn.fnamemodify(cwd, ":~")
+
+        if bufname == "" then
+            bufname = "[-]"
+        else
+            bufname = vim.fn.fnamemodify(bufname, ":t")
+        end
+
+        if i == vim.fn.tabpagenr() then
+            s = s .. "%#TabLineSel#"
+        else
+            s = s .. "%#TabLine#"
+        end
+
+        s = s .. " [" .. i .. "] "
+        -- s = s .. cwd .. "/" .. bufname .. " "
+        s = s .. cwd .. " "
     end
 
-    if i == vim.fn.tabpagenr() then
-      s = s .. "%#TabLineSel#"
-    else
-      s = s .. "%#TabLine#"
-    end
+    s = s .. "%#TabLineFill#"
 
-    s = s .. " [" .. i .. "] " .. bufname .. " "
-  end
-
-  s = s .. "%#TabLineFill#"
-
-  return s
+    return s
 end
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -55,25 +62,31 @@ vim.opt.timeoutlen = 50
 vim.opt.ttimeout = true
 vim.opt.ttimeoutlen = 1
 
-vim.cmd("colorscheme crusx-paper")
 vim.g.mapleader = " "
 vim.o.winborder = "rounded"
 vim.opt.laststatus = 3
-vim.opt.tabstop = 6
-vim.opt.shiftwidth = 6
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
 vim.opt.showmode = false
 vim.opt.tabline = "%!v:lua.MyTabLine()"
+vim.opt.list = true
+vim.opt.smoothscroll = true
+vim.opt.listchars:append({space = '.'})
+vim.opt.shortmess:append("FW")
+vim.opt.showcmd = false
 vim.opt.showtabline = 2
-vim.opt.cursorline = true
+vim.opt.cursorline = false
 vim.opt.scrollback = 1000000
 vim.opt.scrolloff = 999999
 vim.opt.termguicolors = true
 vim.opt.expandtab = true
 vim.opt.guifont = "UbuntuMono Nerd Font:h11.5"
--- vim.opt.number = true
--- vim.opt.relativenumber = true
-vim.opt.virtualedit = "all"
+vim.opt.statuscolumn = "%s%l "
+vim.opt.number = true
+vim.opt.relativenumber = true
+-- vim.opt.virtualedit = "all"
 -- vim.opt.colorcolumn = "80"
+vim.opt.wrap = false
 vim.opt.smartindent = true
 vim.g.rust_recommended_style = false
 vim.opt.hlsearch = true
@@ -109,38 +122,35 @@ vim.keymap.set("t", "<C-S-v>", [[<C-\><C-N>"+pi]], { noremap = true })
 vim.keymap.set("n", "<leader>y", "\"+y")
 vim.keymap.set("v", "<leader>y", "\"+y")
 vim.keymap.set("n", "<leader>o", "<cmd>only<CR>", { desc = "Delete Current Buffer", silent = true})
--- vim.keymap.set("n", "<leader>k", "<cmd>bdelete!<CR>", { desc = "Delete Current Buffer", silent = true})
-vim.keymap.set("n", "<leader>k", "<cmd>close<CR>", { desc = "Close the current window", silent = true})
+vim.keymap.set("n", "<leader>kk", "<cmd>bdelete<CR>", { desc = "Kill/Delete Current Buffer", silent = true})
+vim.keymap.set("n", "<leader>kc", "<cmd>close<CR>", { desc = "Close the current window", silent = true})
 vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv", { desc = "Move Block Down" })
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move Block Up" })
 
-vim.keymap.set("n", "<leader>b", function()
-      local dir = vim.fn.expand("%:p:h")
-      vim.fn.termopen(vim.o.shell, { cwd = dir })
-end, {
-desc = "open terminal in current file directory",
-noremap = true,
-silent = true,
-})
 
 vim.keymap.set("n", "<leader>0", function()
-      vim.cmd("cd " .. vim.fn.expand("~"))
-      vim.cmd("restart")
+    vim.cmd("cd " .. vim.fn.expand("~"))
+    vim.cmd("restart")
 end, {
 desc = "restart neovim in home dir",
 noremap = true,
 silent = true,
 })
 
+-- vim.cmd([[cabbrev q <nop>]])
+vim.keymap.set("ca", "q", "detach", {silent = true})
+vim.keymap.set("n", "<leader>q", ":detach<cr>", {silent = true})
+
+
 vim.keymap.set("n", "<M-t>", function()
-      vim.cmd("tabnew")
-      vim.cmd("terminal")
+    vim.cmd("tabnew")
+    vim.cmd("terminal")
 end, { noremap = true, silent = true})
 
 
 vim.keymap.set("n", "<C-t>", function()
-      vim.cmd("vs")
-      vim.cmd("terminal")
+    vim.cmd("vs")
+    vim.cmd("terminal")
 end,
 { noremap = true, silent = true})
 
@@ -153,131 +163,152 @@ vim.keymap.set("i", "<M-l>", "<nop>")
 vim.keymap.set("i", "<M-j>", "<nop>")
 vim.keymap.set("n", "<leader>u", ":UndotreeToggle<CR>", {noremap = true, silent = true})
 vim.pack.add({
-      "https://github.com/nvim-lua/plenary.nvim",
-      "https://github.com/folke/flash.nvim",
-      "https://github.com/lambdalisue/vim-suda",
-      "https://github.com/mason-org/mason.nvim",
-      "https://github.com/saghen/blink.cmp",
-      "https://github.com/ibhagwan/fzf-lua",
-      -- "https://github.com/sindrets/winshift.nvim",
-      "https://github.com/stevearc/oil.nvim",
-      "https://github.com/folke/which-key.nvim",
-      "https://github.com/nvim-mini/mini.icons",
-      "https://github.com/nvim-lualine/lualine.nvim",
-      "https://github.com/MeanderingProgrammer/render-markdown.nvim",
-      "https://github.com/dhruvasagar/vim-table-mode",
-      "https://github.com/ej-shafran/compile-mode.nvim",
-      "https://github.com/mbbill/undotree",
-      -- Debug
-      "https://codeberg.org/mfussenegger/nvim-dap",
-      "https://github.com/rcarriga/nvim-dap-ui",
-      "https://github.com/nvim-neotest/nvim-nio",
-      "https://github.com/theHamsta/nvim-dap-virtual-text",
+    "https://github.com/nvim-lua/plenary.nvim",
+    "https://github.com/folke/flash.nvim",
+    "https://github.com/lambdalisue/vim-suda",
+    "https://github.com/mason-org/mason.nvim",
+    "https://github.com/saghen/blink.cmp",
+    "https://github.com/ibhagwan/fzf-lua",
+    "https://github.com/stevearc/oil.nvim",
+    "https://github.com/folke/which-key.nvim",
+    "https://github.com/nvim-mini/mini.icons",
+    "https://github.com/nvim-lualine/lualine.nvim",
+    "https://github.com/MeanderingProgrammer/render-markdown.nvim",
+    "https://github.com/dhruvasagar/vim-table-mode",
+    "https://github.com/ej-shafran/compile-mode.nvim",
+    "https://github.com/mbbill/undotree",
+    "https://codeberg.org/mfussenegger/nvim-dap",
+    "https://github.com/rcarriga/nvim-dap-ui",
+    "https://github.com/nvim-neotest/nvim-nio",
+    "https://github.com/theHamsta/nvim-dap-virtual-text",
+    "https://github.com/catppuccin/nvim",
+    "https://github.com/nvim-lualine/lualine.nvim",
+    "https://github.com/nvim-mini/mini.indentscope",
+    "https://github.com/rockerBOO/boo-colorscheme-nvim",
+    "https://github.com/mellow-theme/mellow.nvim",
+
 })
 
+-- setup must be called before loading
+-- vim.cmd.colorscheme "catppuccin-mocha"
+-- vim.api.nvim_set_hl(0, "Normal", {})
+-- require('boo-colorscheme').use({ theme = 'crimson_moonlight' })
+vim.cmd([[colorscheme mellow]])
+
 require("mini.icons").setup()
--- require('lualine').setup()
+require("lualine").setup()
+
+require('mini.indentscope').setup({
+    draw = { delay = 50 },
+    symbol = "│"
+})
+vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#495513", bg = 'NONE'})
+vim.api.nvim_set_hl(0, 'Whitespace', { fg = '#313329', bg = 'NONE'})
+vim.api.nvim_set_hl(0, 'SpecialKey', { fg = '#313329', bg = 'NONE' })
+
+
 require("which-key").setup({ })
 require("mason").setup({ })
--- require("winshift").setup()
 ---@module "compile-mode"
 ---@type CompileModeOpts
 vim.g.compile_mode = {
-      -- The string to show in the compile prompt as a default.
-      -- For an empty prompt, you can use:
-      -- To use different defaults based on filetype, you can use a table:
-      default_command = {
-            python = "python %",
-            lua = "lua %",
-            javascript = "bun %",
-            typescript = "bun %",
-            c = "cc -o %:r % && ./%:r",
-            cpp = "cc -std=c++23 -o %:r % && ./%:r",
-            java = "javac % && java %:r",
-            go = "go run %",
-            rust = "cargo run",
-      },
-      focus_compilation_buffer = true,
+    -- The string to show in the compile prompt as a default.
+    -- For an empty prompt, you can use:
+    -- To use different defaults based on filetype, you can use a table:
+    default_command = {
+        -- python = "python %",
+        -- lua = "lua %",
+        -- javascript = "bun %",
+        -- typescript = "bun %",
+        -- c = "cc -o %:r % && ./%:r",
+        -- cpp = "cc -std=c++23 -o %:r % && ./%:r",
+        -- java = "javac % && java %:r",
+        -- go = "go run %",
+        -- rust = "cargo run",
+    },
+    focus_compilation_buffer = true,
 }
 vim.keymap.set("n", "<leader>r", ":below Compile<CR>")
 vim.keymap.set("n", "<leader>cc", ":below Recompile<CR>")
 require('render-markdown').setup({
-      completions = { blink = { enabled = true } },
-      heading = {
-            enabled = true,
-            backgrounds = {
-                  'none',
-                  'none',
-                  'none',
-                  'none',
-                  'none',
-                  'none',
-            },
-            custom = {},
-      },
-      code = {
-            enabled = false,
-      },
+    completions = { blink = { enabled = true } },
+    heading = {
+        enabled = true,
+        backgrounds = {
+            'none',
+            'none',
+            'none',
+            'none',
+            'none',
+            'none',
+        },
+        custom = {},
+    },
+    code = {
+        enabled = false,
+    },
 })
 
 vim.keymap.set("n", "<leader>sp", function()
-      require("fzf-lua").fzf_exec(
-            "fd --type f --hidden --exclude .git . /",
-            {
-                  prompt = "📁 |> ",
-                  winopts = {
-                        fullscreen = true,
-                        border = "none",
-                  },
+    require("fzf-lua").fzf_exec(
+        "fd --type f --hidden --exclude .git . /",
+        {
+            -- prompt = "📁 |> ",
+            prompt = "󱞶 ",
+            winopts = {
+                fullscreen = true,
+                border = "none",
+            },
 
-                  previewer = false,
+            previewer = false,
 
-                  actions = {
-                        ["default"] = function(selected)
-                              local file = selected[1]
+            actions = {
+                ["default"] = function(selected)
+                    local file = selected[1]
 
-                              if not file then
-                                    return
-                              end
+                    if not file then
+                        return
+                    end
 
-                              local dir = vim.fn.fnamemodify(file, ":h")
+                    local dir = vim.fn.fnamemodify(file, ":h")
 
-                              vim.cmd("tabnew")
-                              vim.cmd("tcd " .. vim.fn.fnameescape(dir))
+                    vim.cmd("tabnew")
+                    vim.cmd("tcd " .. vim.fn.fnameescape(dir))
 
-                              require("oil").open(dir)
-                        end,
-                  },
-            }
-      )
+                    require("oil").open(dir)
+                end,
+            },
+        }
+    )
 end, { desc = "Open file directory in Oil" })
 
 -- FZF-LUA
 local file_win_opts = {
-      fullscreen = true,
-      border = "none",
-      preview = {
-            layout = "vertical",
-            vertical = "up:70%",
-            border = "none"
-      },
+    fullscreen = true,
+    border = "none",
+    preview = {
+        layout = "vertical",
+        vertical = "up:70%",
+        border = "none"
+    },
 }
 
 require("fzf-lua").setup({
-      defaults = {
-            formatter = "path.filename_first",
-      },
-      files = {
-            winopts = file_win_opts
-      },
-      buffers = { winopts = file_win_opts },
-      grep = { winopts = file_win_opts },
-      oldfiles = { winopts = file_win_opts },
-      git = {
-            files = {
-                  winopts = file_win_opts,
-            },
-      }
+    defaults = {
+        formatter = "path.filename_first",
+    },
+    files = {
+        winopts = file_win_opts,
+        fd_opts = [[  --type f --hidden --no-ignore --follow --exclude .git]],
+    },
+    buffers = { winopts = file_win_opts },
+    grep = { winopts = file_win_opts },
+    oldfiles = { winopts = file_win_opts },
+    git = {
+        files = {
+            winopts = file_win_opts,
+        },
+    }
 })
 -- { desc="Find files in the current working directory", noremap = true, silent = true})
 -- vim.keymap.set("n", "<leader>f", "<cmd>lua FzfLua.files({ cwd = '~/' })<CR>",
@@ -285,49 +316,60 @@ vim.keymap.set("n", "<leader>f", "<cmd>lua FzfLua.files()<CR>",
 { desc="Find files from the current working directory", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>/", "<cmd>lua FzfLua.files({ cwd = '/' })<CR>",
 { desc="Find files the system directory", noremap = true, silent = true})
--- vim.keymap.set("n", "<leader>b", "<cmd>FzfLua buffers<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>bb", "<cmd>FzfLua buffers<CR>", { noremap = true, silent = true })
+
+vim.api.nvim_create_user_command('BufOnly', function()
+    local cur_buf = vim.api.nvim_get_current_buf()
+    for _, b in ipairs(vim.api.nvim_list_bufs()) do
+        if b ~= cur_buf and vim.api.nvim_buf_get_option(b, 'buftype') ~= 'terminal' then
+            vim.api.nvim_buf_delete(b, { force = true })
+        end
+    end
+end, {})
+vim.keymap.set('n', '<leader>bo', ':BufOnly<CR>', { silent = true })
+
 
 vim.keymap.set("n", "<C-g>", "<cmd>FzfLua grep<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>l", "<cmd>FzfLua grep_project<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n", "x", "o"}, "s", function() require("flash").jump() end, { desc = "Flash"})
 require("blink.cmp").setup({
-      keymap = {
-            preset = 'default',
-            -- preset = 'enter',
-            ['<C-k>'] = { 'select_prev', 'fallback' },
-            ['<C-j>'] = { 'select_next', 'fallback' },
-            ['<Tab>'] = { 'accept', 'fallback' },
-      },
-      appearance = {
-            nerd_font_variant = 'normal'
-      },
-      completion = {
-            ghost_text = {
-                  enabled = true,
-            },
-            menu = {
-                  auto_show = true
-            }
-      },
-      signature = {
+    keymap = {
+        preset = 'default',
+        -- preset = 'enter',
+        ['<C-k>'] = { 'select_prev', 'fallback' },
+        ['<C-j>'] = { 'select_next', 'fallback' },
+        ['<Tab>'] = { 'accept', 'fallback' },
+    },
+    appearance = {
+        nerd_font_variant = 'normal'
+    },
+    completion = {
+        ghost_text = {
             enabled = true,
-            window = { border = nil }
-      },
-      sources = {
-            default = { 'lsp', 'path', 'snippets', 'buffer', },
-      },
-      fuzzy = { implementation = "lua" },
+        },
+        menu = {
+            auto_show = true
+        }
+    },
+    signature = {
+        enabled = true,
+        window = { border = nil }
+    },
+    sources = {
+        default = { 'lsp', 'path', 'snippets', 'buffer', },
+    },
+    fuzzy = { implementation = "lua" },
 })
 vim.api.nvim_create_user_command("W", function()
-      vim.cmd("SudaWrite")
+    vim.cmd("SudaWrite")
 end, {})
 
 vim.api.nvim_create_autocmd("TextYankPost", {
-      desc = "Highlight when yanking (copying) text",
-      group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
-      callback = function()
-            vim.highlight.on_yank()
-      end,
+    desc = "Highlight when yanking (copying) text",
+    group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
+    callback = function()
+        vim.highlight.on_yank()
+    end,
 })
 
 local dap = require("dap")
@@ -336,409 +378,208 @@ local dapui = require("dapui")
 require("dapui").setup()
 
 require("oil").setup({
-      default_file_explorer = true,
-      columns = {
-            "icon",
-            -- "permissions",
-            -- "size",
-            -- "mtime",
-      },
-      buf_options = {
-            buflisted = false,
-            bufhidden = "hide",
-      },
-      win_options = {
-            wrap = false,
-            signcolumn = "yes",
-            cursorcolumn = false,
-            foldcolumn = "0",
-            spell = false,
-            list = false,
-            conceallevel = 3,
-            concealcursor = "nvic",
-      },
-      delete_to_trash = true,
-      skip_confirm_for_simple_edits = false,
-      prompt_save_on_select_new_entry = true,
-      cleanup_delay_ms = 2000,
-      lsp_file_methods = {
-            enabled = true,
-            timeout_ms = 1000,
-            autosave_changes = true,
-      },
-      constrain_cursor = "editable",
-      watch_for_changes = false,
-      keymaps = {
-            ["g?"] = { "actions.show_help", mode = "n" },
-            ["<CR>"] = "actions.select",
-            ["<C-s>"] = { "actions.select", opts = { vertical = true } },
-            ["<C-h>"] = { "actions.select", opts = { horizontal = true } },
-            ["<C-t>"] = { "actions.select", opts = { tab = true } },
-            ["<C-p>"] = "actions.preview",
-            ["<M-q>"] = { "actions.close", mode = "n" },
-            ["<M-k>"] = "actions.refresh",
-            ["-"] = { "actions.parent", mode = "n" },
-            ["_"] = { "actions.open_cwd", mode = "n" },
-            ["`"] = { "actions.cd", mode = "n" },
-            ["~"] = { "actions.cd", opts = { scope = "tab" }, mode = "n" },
-            ["gs"] = { "actions.change_sort", mode = "n" },
-            ["gx"] = "actions.open_external",
-            ["g."] = { "actions.toggle_hidden", mode = "n" },
-            ["g\\"] = { "actions.toggle_trash", mode = "n" },
-      },
-      use_default_keymaps = true,
-      view_options = {
-            show_hidden = true,
-            is_hidden_file = function(name, bufnr)
-                  local m = name:match("^%.")
-                  return m ~= nil
-            end,
-            is_always_hidden = function(name, bufnr)
-                  return false
-            end,
-            natural_order = "fast",
-            case_insensitive = false,
-            sort = {
-                  { "type", "asc" },
-                  { "name", "asc" },
-            },
-            highlight_filename = function(entry, is_hidden, is_link_target, is_link_orphan)
-                  return nil
-            end,
-      },
-      extra_scp_args = {},
-      git = {
-            -- Return true to automatically git add/mv/rm files
-            add = function(path)
-                  return false
-            end,
-            mv = function(src_path, dest_path)
-                  return false
-            end,
-            rm = function(path)
-                  return false
-            end,
-      },
-      float = {
-            padding = 2,
-            max_width = 0,
-            max_height = 0,
-            border = nil,
-            win_options = {
-                  winblend = 0,
-            },
-            get_win_title = nil,
-            preview_split = "auto",
-            override = function(conf)
-                  return conf
-            end,
-      },
-      preview_win = {
-            update_on_cursor_moved = true,
-            preview_method = "fast_scratch",
-            disable_preview = function(filename)
-                  return false
-            end,
-            win_options = {},
-      },
-      confirmation = {
-            max_width = 0.9,
-            min_width = { 40, 0.4 },
-            width = nil,
-            max_height = 0.9,
-            min_height = { 5, 0.1 },
-            height = nil,
-            border = nil,
-            win_options = {
-                  winblend = 0,
-            },
-      },
-      progress = {
-            max_width = 0.9,
-            min_width = { 40, 0.4 },
-            width = nil,
-            max_height = { 10, 0.9 },
-            min_height = { 5, 0.1 },
-            height = nil,
-            border = nil,
-            minimized_border = "none",
-            win_options = {
-                  winblend = 0,
-            },
-      },
-      ssh = {
-            border = nil,
-      },
-      keymaps_help = {
-            border = nil,
-      },
+    default_file_explorer = true,
+    columns = {
+        "icon",
+        -- "permissions",
+        -- "size",
+        -- "mtime",
+    },
+    buf_options = {
+        buflisted = false,
+        bufhidden = "hide",
+    },
+    win_options = {
+        wrap = false,
+        signcolumn = "yes",
+        cursorcolumn = false,
+        foldcolumn = "0",
+        spell = false,
+        list = false,
+        conceallevel = 3,
+        concealcursor = "nvic",
+    },
+    delete_to_trash = true,
+    skip_confirm_for_simple_edits = false,
+    prompt_save_on_select_new_entry = true,
+    cleanup_delay_ms = 2000,
+    lsp_file_methods = {
+        enabled = true,
+        timeout_ms = 1000,
+        autosave_changes = true,
+    },
+    constrain_cursor = "editable",
+    watch_for_changes = false,
+    keymaps = {
+        ["g?"] = { "actions.show_help", mode = "n" },
+        ["<CR>"] = "actions.select",
+        ["<C-s>"] = { "actions.select", opts = { vertical = true } },
+        ["<C-h>"] = { "actions.select", opts = { horizontal = true } },
+        ["<C-t>"] = { "actions.select", opts = { tab = true } },
+        ["<C-p>"] = "actions.preview",
+        ["<M-q>"] = { "actions.close", mode = "n" },
+        ["<M-k>"] = "actions.refresh",
+        ["-"] = { "actions.parent", mode = "n" },
+        ["_"] = { "actions.open_cwd", mode = "n" },
+        ["`"] = { "actions.cd", mode = "n" },
+        ["~"] = { "actions.cd", opts = { scope = "tab" }, mode = "n" },
+        ["gs"] = { "actions.change_sort", mode = "n" },
+        ["gx"] = "actions.open_external",
+        ["g."] = { "actions.toggle_hidden", mode = "n" },
+        ["g\\"] = { "actions.toggle_trash", mode = "n" },
+    },
+    use_default_keymaps = true,
+    view_options = {
+        show_hidden = true,
+        is_hidden_file = function(name, bufnr)
+            local m = name:match("^%.")
+            return m ~= nil
+        end,
+        is_always_hidden = function(name, bufnr)
+            return false
+        end,
+        natural_order = "fast",
+        case_insensitive = false,
+        sort = {
+            { "type", "asc" },
+            { "name", "asc" },
+        },
+        highlight_filename = function(entry, is_hidden, is_link_target, is_link_orphan)
+            return nil
+        end,
+    },
+    extra_scp_args = {},
+    git = {
+        -- Return true to automatically git add/mv/rm files
+        add = function(path)
+            return false
+        end,
+        mv = function(src_path, dest_path)
+            return false
+        end,
+        rm = function(path)
+            return false
+        end,
+    },
+    float = {
+        padding = 2,
+        max_width = 0,
+        max_height = 0,
+        border = nil,
+        win_options = {
+            winblend = 0,
+        },
+        get_win_title = nil,
+        preview_split = "auto",
+        override = function(conf)
+            return conf
+        end,
+    },
+    preview_win = {
+        update_on_cursor_moved = true,
+        preview_method = "fast_scratch",
+        disable_preview = function(filename)
+            return false
+        end,
+        win_options = {},
+    },
+    confirmation = {
+        max_width = 0.9,
+        min_width = { 40, 0.4 },
+        width = nil,
+        max_height = 0.9,
+        min_height = { 5, 0.1 },
+        height = nil,
+        border = nil,
+        win_options = {
+            winblend = 0,
+        },
+    },
+    progress = {
+        max_width = 0.9,
+        min_width = { 40, 0.4 },
+        width = nil,
+        max_height = { 10, 0.9 },
+        min_height = { 5, 0.1 },
+        height = nil,
+        border = nil,
+        minimized_border = "none",
+        win_options = {
+            winblend = 0,
+        },
+    },
+    ssh = {
+        border = nil,
+    },
+    keymaps_help = {
+        border = nil,
+    },
 })
 vim.keymap.set("n", "<leader>e", "<cmd>Oil<CR>")
--- Ensure terminals inherit current window cwd
-vim.api.nvim_create_autocmd("TermOpen", {
-      callback = function()
-            local cwd = vim.fn.getcwd(0)
-            vim.cmd("tcd " .. vim.fn.fnameescape(cwd))
-      end,
-})
-
-vim.api.nvim_create_autocmd("TermOpen", {
-      callback = function()
-            local cwd = vim.fn.getcwd(0)
-            vim.cmd("tcd " .. vim.fn.fnameescape(cwd))
-      end,
-})
-
--- vim.keymap.set("n", "<leader>h", function()
---   local oil = require("oil")
---   local dir = oil.get_current_dir()
---       local oil = require("oil")
---       local dir = oil.get_current_dir()
---
---   if not dir then
---     print("Not inside Oil")
---     return
---   end
---   -- Save directory to current buffer
---   vim.b.local_cwd = dir
---   -- Apply window-local cwd
---   vim.cmd("lcd " .. vim.fn.fnameescape(dir))
---   print("Buffer cwd -> " .. dir)
---       if not dir then
---             print("Not inside Oil")
---             return
---       end
---       -- Save directory to current buffer
---       vim.b.local_cwd = dir
---       -- Apply window-local cwd
---       vim.cmd("lcd " .. vim.fn.fnameescape(dir))
---       print("Buffer cwd -> " .. dir)
--- end, { desc = "Set buffer cwd from Oil" })
-
--- vim.api.nvim_create_autocmd("InsertEnter", {
---     callback = function()
---         vim.wo.winhighlight = "CursorLine:InsertCursorLine"
---         vim.cmd("highlight InsertCursorLine guifg=#AD9E86")
---     end,
--- })
---
--- vim.api.nvim_create_autocmd("InsertLeave", {
---       callback = function()
---             -- vim.wo.winhighlight = "CursorLine:NormalCursorLine"
---             vim.cmd("highlight CursorLine guibg=#52010B guifg=NONE")
---       end,
--- })
 
 -- Ensure terminals inherit current window cwd
-vim.api.nvim_create_autocmd("VimEnter", {
-      callback = function()
-            vim.cmd(":terminal")
-      end,
+vim.api.nvim_create_autocmd("TermOpen", {
+    callback = function()
+        local cwd = vim.fn.getcwd(0)
+        vim.cmd("tcd " .. vim.fn.fnameescape(cwd))
+    end,
 })
 
-local lualine = require('lualine')
--- Color table for highlights
--- stylua: ignore
-local colors = {
-      bg       = '#141414',
-      fg       = '#bbc2cf',
-      yellow   = '#ECBE7B',
-      cyan     = '#008080',
-      darkblue = '#081633',
-      green    = '#98be65',
-      orange   = '#FF8800',
-      violet   = '#a9a1e1',
-      magenta  = '#c678dd',
-      blue     = '#51afef',
-      red      = '#ec5f67',
-}
-local conditions = {
-      buffer_not_empty = function()
-            return vim.fn.empty(vim.fn.expand('%:t')) ~= 1
-      end,
-      hide_in_width = function()
-            return vim.fn.winwidth(0) > 80
-      end,
-      check_git_workspace = function()
-            local filepath = vim.fn.expand('%:p:h')
-            local gitdir = vim.fn.finddir('.git', filepath .. ';')
-            return gitdir and #gitdir > 0 and #gitdir < #filepath
-      end,
-}
--- Config
-local config = {
-      options = {
-            -- Disable sections and component separators
-            component_separators = '',
-            section_separators = '',
-            theme = {
-                  -- We are going to use lualine_c an lualine_x as left and
-                  -- right section. Both are highlighted by c theme .  So we
-                  -- are just setting default looks o statusline
-                  normal = { c = { fg = colors.fg, bg = "#181818"  } }, --colors.bg
-                  inactive = { c = { fg = colors.fg, bg = colors.bg } },
-            },
-      },
-      sections = {
-            -- these are to remove the defaults
-            lualine_a = {},
-            lualine_b = {},
-            lualine_y = {},
-            lualine_z = {},
-            -- These will be filled later
-            lualine_c = {},
-            lualine_x = {},
-      },
-      inactive_sections = {
-            -- these are to remove the defaults
-            lualine_a = {},
-            lualine_b = {},
-            lualine_y = {},
-            lualine_z = {},
-            lualine_c = {},
-            lualine_x = {},
-      },
-}
--- Inserts a component in lualine_c at left section
-local function ins_left(component)
-      table.insert(config.sections.lualine_c, component)
-end
--- Inserts a component in lualine_x at right section
-local function ins_right(component)
-      table.insert(config.sections.lualine_x, component)
-end
+vim.api.nvim_create_autocmd("TermOpen", {
+    callback = function()
+        local cwd = vim.fn.getcwd(0)
+        vim.cmd("tcd " .. vim.fn.fnameescape(cwd))
+    end,
+})
 
+vim.keymap.set("n", "<leader>h", function()
+    local oil = require("oil")
+    local dir = oil.get_current_dir()
+    local oil = require("oil")
+    local dir = oil.get_current_dir()
 
-ins_left {
-      function()
-           return "⟦⟪⟫⟧"
-      end,
-      color = { fg = "#9D62D3" },
-      padding = { left = 0, right = 1 }, -- We don't need space before this
-}
-ins_left {
-      -- filesize component
-      'filesize',
-      cond = conditions.buffer_not_empty,
-}
-
-ins_left { 'location' }
-
-ins_left { 'progress', color = { fg = colors.fg } }
-
-ins_left {
-      'diagnostics',
-      sources = { 'nvim_diagnostic' },
-      symbols = { error = ' ', warn = ' ', info = ' ' },
-      diagnostics_color = {
-            error = { fg = colors.red },
-            warn = { fg = colors.yellow },
-            info = { fg = colors.cyan },
-      },
-}
-
-ins_left {
-      function()
-            return '%='
-      end,
-}
-
-
-ins_left {
-      -- Lsp server name .
-      function()
-            local msg = 'No Active Lsp'
-            local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
-            local clients = vim.lsp.get_clients()
-            if next(clients) == nil then
-                  return msg
-            end
-            for _, client in ipairs(clients) do
-                  local filetypes = client.config.filetypes
-                  if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
-                        return client.name
-                  end
-            end
-            return msg
-      end,
-      icon = '',
-      color = { fg = '#CDE3C8' },
-}
-
-ins_right {
-      function()
-            return '%='
-      end,
-}
-
-
--- Add components to right sections
-ins_right {
-      'o:encoding', -- option component same as &encoding in viml
-      fmt = string.upper, -- I'm not sure why it's upper case either ;)
-      cond = conditions.hide_in_width,
-      color = { fg = colors.green },
-}
-
-
-
-ins_right {
-      'fileformat',
-      fmt = string.upper,
-      icons_enabled = false, -- I think icons are cool but Eviline doesn't have them. sigh
-      color = { fg = colors.green },
-}
-
-ins_right {
-      'branch',
-      icon = '',
-      color = { fg = colors.violet },
-}
-
-ins_right {
-      'diff',
-      -- Is it me or the symbol for modified us really weird
-      symbols = { added = ' ', modified = '󰝤 ', removed = ' ' },
-      diff_color = {
-            added = { fg = colors.green },
-            modified = { fg = colors.orange },
-            removed = { fg = colors.red },
-      },
-      cond = conditions.hide_in_width,
-}
-
-ins_right {
-      function()
-           return "⟦⟪⟫⟧"
-            -- return "▞▚"
-      end,
-      color = { fg = "#9D62D3" },
-      padding = { left = 0, right = 0 },
-}
--- Now don't forget to initialize lualine
-lualine.setup(config)
+    if not dir then
+        print("Not inside Oil")
+        return
+    end
+    -- Save directory to current buffer
+    vim.b.local_cwd = dir
+    -- Apply window-local cwd
+    vim.cmd("lcd " .. vim.fn.fnameescape(dir))
+    print("Buffer cwd -> " .. dir)
+    if not dir then
+        print("Not inside Oil")
+        return
+    end
+    -- Save directory to current buffer
+    vim.b.local_cwd = dir
+    -- Apply window-local cwd
+    vim.cmd("lcd " .. vim.fn.fnameescape(dir))
+    print("Buffer cwd -> " .. dir)
+end, { desc = "Set buffer cwd from Oil" })
 
 vim.lsp.enable({
-      "rust_analyzer",
-      "ols",
-      "luals",
-      "clangd",
+    "rust_analyzer",
+    "ols",
+    "luals",
+    "clangd",
 })
 
 vim.diagnostic.config({
-      signs = {
-            text = {
-                  ERROR = " ",
-                  WARN  = " ",
-                  HINT  = " ",
-                  INFO  = " ",
-            },
-      },
-      virtual_text = true,
+    signs = {
+        text = {
+            ERROR = " ",
+            WARN  = " ",
+            HINT  = " ",
+            INFO  = " ",
+        },
+    },
+    virtual_text = true,
 })
-vim.o.signcolumn = "yes"
+
+-- vim.o.signcolumn = "auto"
 vim.keymap.set("n", "<leader>m", function()
-      vim.diagnostic.open_float(nil, { focus = false })
+    vim.diagnostic.open_float(nil, { focus = false })
 end, {desc = "View Diagnostics Error",
 noremap = true})
 
@@ -750,17 +591,3 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- vim.keymap.set('i', '<M-l>',       vim.lsp.buf.signature_help, { buffer = args.buf })
     end,
 })
-
-
-
--- color0   "#bbc2cf"
--- color1   "#008080"
--- color2   "#458F2C"
--- color3   "#B8CC52"
--- color4   "#E6B673"
--- color5   "#FF7733"
--- color6   "#C73C20"
--- color7   "#A8FF4A"
--- color8   "#9D62D3"
--- color9   "#FFB454"
--- --
