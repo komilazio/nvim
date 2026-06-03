@@ -2,32 +2,29 @@ vim.cmd("highlight clear")
 vim.cmd("syntax reset")
 vim.g.colors_name = "crusx-paper"
 
-
 -- TODO(lazio): Put in real "dust" particle or whatever
 -- NOTE(lazio): this is just a comment adjustment
 
 local color = {
-    -- fg = "#AD9E86",
-    fg = "#EBD3AC",
-    bg = "#101010",
-    bg_float = "#000000",
-    comment = "#9E98A0",
-    cursor_line = "#202025",
-    keyword = "#F3C505",
-    number = "#C481FF",
+    fg = "#AD9E86",
+    bg = "#242323",
+    bg_float = "#101010",
+    comment = "#4E4352",
+    cursor_line = "#250106",
+    keyword = "#BD9943",
+    number = "#8F6B4C",
     todo = "#C73C20",
     search = "#A8FF4A",
     code = "#101010",
-    in_search = "#9558AC",
-    visual = "#3A3E52",
-    func = "#FC8D5C",
+    in_search = "#9D62D3",
+    visual = "#180122",
+    func = "#CE6203",
     builtin = "#45776D",
     seperator = "#151516",
     sign_column = "#000000",
     tab = "#458F2C",
-    bool = "#B6434B",
     tab_off = "#193F0C",
-    string = "#9DC3C9",
+    string = "#455153",
     color_column = "#313641"
 }
 
@@ -44,13 +41,13 @@ hi('FloatBorder',  { fg = color.fg, bg = color.bg })
 hi('lCursor',      { fg = color.fg, bg = color.bg })
 hi('Title',        { fg = color.comment, bg = color.bg })
 hi('CursorIM',     { fg = color.fg, bg = color.bg })
--- hi('ColorColumn',  { bg = color.color_column })
+hi('ColorColumn',  { bg = color.color_column })
 hi('TermCursor',   { fg = color.fg, bg = color.tab })
 hi('TermCursorNC', { fg = color.fg, bg = color.bg })
 hi('CursorLine',   { bg = color.cursor_line,  bold = false})
+-- hi('CursorLine',   { bg = color.cursor_line,  bold = false})
 hi('StatusLine',   { bg = color.bg, bold = false })
 hi('Search',       { fg = color.in_search, bold = false })
--- hi('Boolean',       { fg = color.bool, bold = false })
 hi('IncSearch',    { fg = color.search, bold = false })
 hi('FloatBorder',  { fg = color.bg_float, bg = color.bg_float })
 hi('FloatShadow',  { bg = color.bg_float, blend = 100 })
@@ -75,7 +72,7 @@ hi('Exception',    { fg = color.fg,  bold = false })
 hi('PreProc',      { fg = color.fg,  bold = false })
 hi('Character',    { fg = color.fg,  bold = false })
 hi('Number',       { fg = color.number,  bold = false })
-hi('Boolean',      { fg = color.bool,  bold = false })
+hi('Boolean',      { fg = color.fg,  bold = false })
 hi('Float',        { fg = color.fg,  bold = false })
 hi('Identifier',   { fg = color.fg,  bold = false })
 hi('Function',     { fg = color.func,  bold = false })
@@ -210,10 +207,10 @@ hi('@markup.link.url.markdown_inline',     { fg = color.builtin, bg = color.bg }
 hi('@markup.link.label.markdown_inline',     { fg = color.builtin, bg = color.bg, italic = true })
 hi('@label.markdown',     { fg = color.keyword, bg = color.code, italic = false })
 
-hi('PERF',      { fg = '#3BD4DF', bold = false })
-hi('NOTE',      { fg = '#CCEC2F', bold = false })
-hi('FIXME',      { fg = '#FA411B', bold = false })
-hi('TODO',      { fg = '#FA411B', bold = false })
+hi('PERF',      { fg = '#62A3A8', bold = false })
+hi('NOTE',      { fg = '#8CA31E', bold = false })
+hi('FIXME',      { fg = '#C73C20', bold = false })
+hi('TODO',      { fg = '#C73C20', bold = false })
 
 -- vim.cmd([[
 -- autocmd BufRead,BufNewFile * call matchadd('Perf', '\<PERF\>')

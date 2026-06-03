@@ -16,6 +16,10 @@
       "rev": "dd3e952076a33faba0a55b04b2b73945832c0527",
       "src": "https://github.com/ej-shafran/compile-mode.nvim"
     },
+    "deepwater.nvim": {
+      "rev": "6f1b945098c497bd7249e3f7ad37f5d0443f5463",
+      "src": "https://github.com/dgrco/deepwater.nvim"
+    },
     "feline.nvim": {
       "rev": "3587f57480b88e8009df7b36dc84e9c7ff8f2c49",
       "src": "https://github.com/feline-nvim/feline.nvim"

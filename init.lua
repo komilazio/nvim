@@ -5,42 +5,46 @@
 -- vim.g.nvim_remote_open = "tab"
 
 -- creates somne fancy tabs [n] bufname
-function _G.MyTabLine()
-    local s = ""
-
-    for i = 1, vim.fn.tabpagenr("$") do
-        local winnr = vim.fn.tabpagewinnr(i)
-        local buflist = vim.fn.tabpagebuflist(i)
-        local bufnr = buflist[winnr]
-
-        local bufname = vim.fn.bufname(bufnr)
-
-        -- current working directory for this tab
-        local cwd = vim.fn.getcwd(-1, i)
-        cwd = vim.fn.fnamemodify(cwd, ":~")
-
-        if bufname == "" then
-            bufname = "[-]"
-        else
-            bufname = vim.fn.fnamemodify(bufname, ":t")
-        end
-
-        if i == vim.fn.tabpagenr() then
-            s = s .. "%#TabLineSel#"
-        else
-            s = s .. "%#TabLine#"
-        end
-
-        s = s .. " [" .. i .. "] "
-        -- s = s .. cwd .. "/" .. bufname .. " "
-        s = s .. cwd .. " "
-    end
-
-    s = s .. "%#TabLineFill#"
-
-    return s
-end
-
+-- function _G.MyTabLine()
+--     local s = ""
+--
+--     for i = 1, vim.fn.tabpagenr("$") do
+--         local winnr = vim.fn.tabpagewinnr(i)
+--         local buflist = vim.fn.tabpagebuflist(i)
+--         local bufnr = buflist[winnr]
+--
+--         local bufname = vim.fn.bufname(bufnr)
+--
+--         -- current working directory for this tab
+--         local cwd = vim.fn.getcwd(-1, i)
+--         cwd = vim.fn.fnamemodify(cwd, ":~")
+--
+--         if bufname == "" then
+--             bufname = "[-]"
+--         else
+--             bufname = vim.fn.fnamemodify(bufname, ":t")
+--         end
+--
+--         if i == vim.fn.tabpagenr() then
+--             s = s .. "%#TabLineSel#"
+--         else
+--             s = s .. "%#TabLine#"
+--         end
+--
+--         s = s .. " [" .. i .. "] "
+--         -- s = s .. cwd .. "/" .. bufname .. " "
+--         s = s .. cwd .. " "
+--     end
+--
+--     s = s .. "%#TabLineFill#"
+--
+--     return s
+-- end
+-- vim.opt.tabline = "%!v:lua.MyTabLine()"
+--
+--
+--
+--
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "markdown",
     callback = function()
@@ -68,13 +72,12 @@ vim.opt.laststatus = 3
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.showmode = false
-vim.opt.tabline = "%!v:lua.MyTabLine()"
 vim.opt.list = true
 vim.opt.smoothscroll = true
 vim.opt.listchars:append({space = '.'})
 vim.opt.shortmess:append("FW")
 vim.opt.showcmd = false
-vim.opt.showtabline = 2
+vim.opt.showtabline = 0
 vim.opt.cursorline = false
 vim.opt.scrollback = 1000000
 vim.opt.scrolloff = 999999
@@ -184,23 +187,24 @@ vim.pack.add({
     "https://github.com/catppuccin/nvim",
     "https://github.com/nvim-lualine/lualine.nvim",
     "https://github.com/nvim-mini/mini.indentscope",
-    "https://github.com/rockerBOO/boo-colorscheme-nvim",
     "https://github.com/mellow-theme/mellow.nvim",
+    "https://github.com/dgrco/deepwater.nvim",
 
 })
 
 -- setup must be called before loading
--- vim.cmd.colorscheme "catppuccin-mocha"
+-- vim.cmd.colorscheme "crux"
 -- vim.api.nvim_set_hl(0, "Normal", {})
 -- require('boo-colorscheme').use({ theme = 'crimson_moonlight' })
-vim.cmd([[colorscheme mellow]])
+vim.cmd([[colorscheme deepwater]])
 
 require("mini.icons").setup()
 require("lualine").setup()
 
 require('mini.indentscope').setup({
     draw = { delay = 50 },
-    symbol = "│"
+    -- symbol = "│"
+    symbol = "|"
 })
 vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#495513", bg = 'NONE'})
 vim.api.nvim_set_hl(0, 'Whitespace', { fg = '#313329', bg = 'NONE'})
@@ -230,6 +234,7 @@ vim.g.compile_mode = {
 }
 vim.keymap.set("n", "<leader>r", ":below Compile<CR>")
 vim.keymap.set("n", "<leader>cc", ":below Recompile<CR>")
+
 require('render-markdown').setup({
     completions = { blink = { enabled = true } },
     heading = {
@@ -317,6 +322,9 @@ vim.keymap.set("n", "<leader>f", "<cmd>lua FzfLua.files()<CR>",
 vim.keymap.set("n", "<leader>/", "<cmd>lua FzfLua.files({ cwd = '/' })<CR>",
 { desc="Find files the system directory", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>bb", "<cmd>FzfLua buffers<CR>", { noremap = true, silent = true })
+-- Because my projects opens in tabs
+vim.keymap.set("n", "<leader>p", "<cmd>FzfLua tabs<CR>", { desc = "Open projects" })
+
 
 vim.api.nvim_create_user_command('BufOnly', function()
     local cur_buf = vim.api.nvim_get_current_buf()
@@ -332,6 +340,7 @@ vim.keymap.set('n', '<leader>bo', ':BufOnly<CR>', { silent = true })
 vim.keymap.set("n", "<C-g>", "<cmd>FzfLua grep<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>l", "<cmd>FzfLua grep_project<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n", "x", "o"}, "s", function() require("flash").jump() end, { desc = "Flash"})
+
 require("blink.cmp").setup({
     keymap = {
         preset = 'default',
@@ -348,7 +357,7 @@ require("blink.cmp").setup({
             enabled = true,
         },
         menu = {
-            auto_show = true
+            auto_show = false
         }
     },
     signature = {
