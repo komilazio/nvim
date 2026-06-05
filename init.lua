@@ -1,48 +1,22 @@
--- Automatically start a server for nvr
--- if vim.fn.empty(vim.v.servername) > 0 then
---       vim.fn.serverstart(vim.fn.stdpath("cache") .. "/nvim-server")
--- end
--- vim.g.nvim_remote_open = "tab"
+local original_listchars = vim.opt.listchars:get()
 
--- creates somne fancy tabs [n] bufname
--- function _G.MyTabLine()
---     local s = ""
---
---     for i = 1, vim.fn.tabpagenr("$") do
---         local winnr = vim.fn.tabpagewinnr(i)
---         local buflist = vim.fn.tabpagebuflist(i)
---         local bufnr = buflist[winnr]
---
---         local bufname = vim.fn.bufname(bufnr)
---
---         -- current working directory for this tab
---         local cwd = vim.fn.getcwd(-1, i)
---         cwd = vim.fn.fnamemodify(cwd, ":~")
---
---         if bufname == "" then
---             bufname = "[-]"
---         else
---             bufname = vim.fn.fnamemodify(bufname, ":t")
---         end
---
---         if i == vim.fn.tabpagenr() then
---             s = s .. "%#TabLineSel#"
---         else
---             s = s .. "%#TabLine#"
---         end
---
---         s = s .. " [" .. i .. "] "
---         -- s = s .. cwd .. "/" .. bufname .. " "
---         s = s .. cwd .. " "
---     end
---
---     s = s .. "%#TabLineFill#"
---
---     return s
--- end
--- vim.opt.tabline = "%!v:lua.MyTabLine()"
---
---
+vim.api.nvim_create_autocmd("ModeChanged", {
+    pattern = "*:[vV\22]*",
+    callback = function()
+        vim.opt_local.list = true
+
+        local chars = vim.deepcopy(original_listchars)
+        chars.space = "."
+        vim.opt_local.listchars = chars
+    end,
+})
+
+vim.api.nvim_create_autocmd("ModeChanged", {
+    pattern = "[vV\22]*:*",
+    callback = function()
+        vim.opt_local.listchars = original_listchars
+    end,
+})
 --
 --
 vim.api.nvim_create_autocmd("FileType", {
@@ -59,8 +33,11 @@ vim.keymap.set('n', '<C-0>', ":let g:neovide_scale_factor = 1<CR>")
 
 vim.g.neovide_scroll_animation_length = 0.1
 vim.g.neovide_cursor_animation_length = 0.005
-vim.g.neovide_cursor_vfx_mode = "railgun"
+-- vim.g.neovide_cursor_vfx_mode = "railgun"
+vim.g.neovide_hide_mouse_when_typing = true
 
+
+vim.o.background = "light"
 vim.opt.timeout = true
 vim.opt.timeoutlen = 50
 vim.opt.ttimeout = true
@@ -69,21 +46,21 @@ vim.opt.ttimeoutlen = 1
 vim.g.mapleader = " "
 vim.o.winborder = "rounded"
 vim.opt.laststatus = 3
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
+vim.opt.expandtab = true   -- Use spaces instead of tabs
+vim.opt.shiftwidth = 4     -- Number of spaces for each indentation level
+vim.opt.tabstop = 4        -- Number of spaces a <Tab> in the file counts for
+vim.opt.softtabstop = 4    -- Number of spaces a <Tab> counts for while editing
 vim.opt.showmode = false
 vim.opt.list = true
 vim.opt.smoothscroll = true
-vim.opt.listchars:append({space = '.'})
+-- vim.opt.listchars:append({space = '.'})
 vim.opt.shortmess:append("FW")
 vim.opt.showcmd = false
 vim.opt.showtabline = 0
-vim.opt.cursorline = false
+vim.opt.cursorline = true
 vim.opt.scrollback = 1000000
 vim.opt.scrolloff = 999999
 vim.opt.termguicolors = true
-vim.opt.expandtab = true
-vim.opt.guifont = "UbuntuMono Nerd Font:h11.5"
 vim.opt.statuscolumn = "%s%l "
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -129,16 +106,12 @@ vim.keymap.set("n", "<leader>kk", "<cmd>bdelete<CR>", { desc = "Kill/Delete Curr
 vim.keymap.set("n", "<leader>kc", "<cmd>close<CR>", { desc = "Close the current window", silent = true})
 vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv", { desc = "Move Block Down" })
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move Block Up" })
-
+vim.o.guifont = "SeriousShanns Nerd Font:h:7"
 
 vim.keymap.set("n", "<leader>0", function()
     vim.cmd("cd " .. vim.fn.expand("~"))
     vim.cmd("restart")
-end, {
-desc = "restart neovim in home dir",
-noremap = true,
-silent = true,
-})
+end, { desc = "restart neovim in home dir", noremap = true, silent = true, })
 
 -- vim.cmd([[cabbrev q <nop>]])
 vim.keymap.set("ca", "q", "detach", {silent = true})
@@ -149,7 +122,6 @@ vim.keymap.set("n", "<M-t>", function()
     vim.cmd("tabnew")
     vim.cmd("terminal")
 end, { noremap = true, silent = true})
-
 
 vim.keymap.set("n", "<C-t>", function()
     vim.cmd("vs")
@@ -189,14 +161,122 @@ vim.pack.add({
     "https://github.com/nvim-mini/mini.indentscope",
     "https://github.com/mellow-theme/mellow.nvim",
     "https://github.com/dgrco/deepwater.nvim",
+    "https://github.com/m00qek/baleia.nvim",
+    -- "https://github.com/mvllow/modes.nvim",
+    "https://github.com/ellisonleao/gruvbox.nvim",
 
 })
+
 
 -- setup must be called before loading
 -- vim.cmd.colorscheme "crux"
 -- vim.api.nvim_set_hl(0, "Normal", {})
 -- require('boo-colorscheme').use({ theme = 'crimson_moonlight' })
-vim.cmd([[colorscheme deepwater]])
+-- Default options:
+-- vim.cmd([[colorscheme deepwater]])
+require("gruvbox").setup({
+    terminal_colors = true, -- add neovim terminal colors
+    undercurl = true,
+    underline = true,
+    bold = true,
+    italic = {
+        strings = false,
+        emphasis = false,
+        comments = false,
+        operators = false,
+        folds = true,
+    },
+    strikethrough = true,
+    invert_selection = false,
+    invert_signs = false,
+    invert_tabline = false,
+    inverse = true, -- invert background for search, diffs, statuslines and errors
+    contrast = "soft", -- can be "hard", "soft" or empty string
+    palette_overrides = {
+        Normal = {bg = "#7c6f64"},
+        -- Whitespace = { fg = "#504945"},
+        -- SpecialKey = { bg = "#7c6f64" },
+    },
+    overrides = {},
+    dim_inactive = false,
+    transparent_mode = false,
+})
+vim.cmd([[colorscheme gruvbox]])
+
+-- Mode indicator: colors cursorline per mode, always bold
+local mode_colors = {
+    n        = "#f2e5bc",
+    i        = "#cc241d",
+    v        = "#9745be",
+    V        = "#9745be",
+    ["\22"]  = "#9745be",
+    R        = "#245361",
+    c        = "#f5c359",
+}
+
+local line_opacity = 0.15
+
+local function hex_to_rgb(hex)
+    hex = hex:gsub("#", "")
+    return tonumber(hex:sub(1,2), 16),
+           tonumber(hex:sub(3,4), 16),
+           tonumber(hex:sub(5,6), 16)
+end
+
+local function blend(fg_hex, bg_hex, alpha)
+    local fr, fg, fb = hex_to_rgb(fg_hex)
+    local br, bg, bb = hex_to_rgb(bg_hex)
+    local r = math.floor(fr * alpha + br * (1 - alpha))
+    local g = math.floor(fg * alpha + bg * (1 - alpha))
+    local b = math.floor(fb * alpha + bb * (1 - alpha))
+    return string.format("#%02x%02x%02x", r, g, b)
+end
+
+local function get_bg()
+    local hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+    if hl.bg then
+        return string.format("#%06x", hl.bg)
+    end
+    return "#282828"
+end
+
+vim.o.guicursor = "n-c:block-Cursor,i-ci-ve:block-CursorInsert,v-V:block-CursorVisual,r-cr:hor20-Cursor"
+
+local function update_cursorline()
+    vim.schedule(function()
+        local mode = vim.fn.mode()
+        local color = mode_colors[mode] or mode_colors["n"]
+        local opacity = (mode == "n") and 0 or line_opacity
+        local blended = blend(color, get_bg(), opacity)
+
+        vim.api.nvim_set_hl(0, "CursorLine",   { bg = blended, bold = true })
+        vim.api.nvim_set_hl(0, "CursorLineNr", { bg = blended, bold = true })
+        vim.api.nvim_set_hl(0, "Cursor",       { bg = "#665c54", fg = "#f9f5d7" })
+        vim.api.nvim_set_hl(0, "CursorInsert", { bg = "#cc241d", fg = "#f9f5d7" })
+        vim.api.nvim_set_hl(0, "CursorVisual", { bg = "#9745be", fg = "#f9f5d7" })
+
+        if mode == "v" or mode == "V" or mode == "\22" then
+            vim.api.nvim_set_hl(0, "Visual", { bg = blended })
+        else
+            vim.api.nvim_set_hl(0, "Visual", { bg = "#504945" })
+        end
+    end)
+end
+
+update_cursorline()
+
+vim.api.nvim_create_autocmd({ "ModeChanged", "ColorScheme", "BufEnter", "WinEnter" }, {
+    callback = update_cursorline,
+})
+
+vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+    callback = function()
+        local mode = vim.fn.mode()
+        if mode == "v" or mode == "V" or mode == "\22" then
+            update_cursorline()
+        end
+    end,
+})
 
 require("mini.icons").setup()
 require("lualine").setup()
@@ -204,21 +284,29 @@ require("lualine").setup()
 require('mini.indentscope').setup({
     draw = { delay = 50 },
     -- symbol = "│"
-    symbol = "|"
+    symbol = "╎"
 })
-vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#495513", bg = 'NONE'})
-vim.api.nvim_set_hl(0, 'Whitespace', { fg = '#313329', bg = 'NONE'})
-vim.api.nvim_set_hl(0, 'SpecialKey', { fg = '#313329', bg = 'NONE' })
-
+vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#bdae93", bg = 'NONE'})
+vim.api.nvim_set_hl(0, "Whitespace", { fg = "#504945"})
+vim.api.nvim_set_hl(0, "SpecialKey", { fg = "#bdae93"})
 
 require("which-key").setup({ })
 require("mason").setup({ })
+
 ---@module "compile-mode"
 ---@type CompileModeOpts
 vim.g.compile_mode = {
-    -- The string to show in the compile prompt as a default.
-    -- For an empty prompt, you can use:
-    -- To use different defaults based on filetype, you can use a table:
+    -- if you use something like `nvim-cmp` or `blink.cmp` for completion,
+    -- set this to fix tab completion in command mode:
+    input_word_completion = true,
+
+    -- to add ANSI escape code support, add:
+    baleia_setup = true,
+
+    -- to make `:Compile` replace special characters (e.g. `%`) in
+    -- the command (and behave more like `:!`), add:
+    bang_expansion = true,
+
     default_command = {
         -- python = "python %",
         -- lua = "lua %",
@@ -232,8 +320,10 @@ vim.g.compile_mode = {
     },
     focus_compilation_buffer = true,
 }
-vim.keymap.set("n", "<leader>r", ":below Compile<CR>")
+vim.keymap.set("n", "<leader>cr", ":below Compile<CR>")
 vim.keymap.set("n", "<leader>cc", ":below Recompile<CR>")
+vim.keymap.set("n", "<leader>cx", ":Trouble diagnostics toggle<CR>")
+vim.keymap.set("n", "<leader>ct", ":!ctags -R .<CR>")
 
 require('render-markdown').setup({
     completions = { blink = { enabled = true } },
@@ -253,6 +343,16 @@ require('render-markdown').setup({
         enabled = false,
     },
 })
+
+--========================================================
+vim.g.baleia = require("baleia").setup({ })
+-- Command to colorize the current buffer
+vim.api.nvim_create_user_command("BaleiaColorize", function()
+    vim.g.baleia.once(vim.api.nvim_get_current_buf())
+end, { bang = true })
+-- Command to show logs
+vim.api.nvim_create_user_command("BaleiaLogs", vim.cmd.messages, { bang = true })
+--========================================================
 
 vim.keymap.set("n", "<leader>sp", function()
     require("fzf-lua").fzf_exec(
