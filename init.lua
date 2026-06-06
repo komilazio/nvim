@@ -106,7 +106,6 @@ vim.keymap.set("n", "<leader>kk", "<cmd>bdelete<CR>", { desc = "Kill/Delete Curr
 vim.keymap.set("n", "<leader>kc", "<cmd>close<CR>", { desc = "Close the current window", silent = true})
 vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv", { desc = "Move Block Down" })
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move Block Up" })
-vim.o.guifont = "SeriousShanns Nerd Font:h:7"
 
 vim.keymap.set("n", "<leader>0", function()
     vim.cmd("cd " .. vim.fn.expand("~"))
