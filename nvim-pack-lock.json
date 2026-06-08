@@ -56,6 +56,10 @@
       "rev": "3a024e8fd7105ee9416aafcdb0a7787be1795d68",
       "src": "https://github.com/thesimonho/kanagawa-paper.nvim"
     },
+    "lackluster.nvim": {
+      "rev": "70dd682e564784893b984deb51dd5ddd263c8cc7",
+      "src": "https://github.com/slugbyte/lackluster.nvim"
+    },
     "lualine.nvim": {
       "rev": "f5d2a8570f8b736ddb9bb4be504355bcd6e15ec8",
       "src": "https://github.com/nvim-lualine/lualine.nvim"
@@ -143,6 +147,10 @@
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
       "src": "https://github.com/folke/which-key.nvim"
+    },
+    "yorumi.nvim": {
+      "rev": "e5b93e2c0adb3d95ca9f3c5c20e824d15afcfe48",
+      "src": "https://github.com/yorumicolors/yorumi.nvim"
     }
   }
 }

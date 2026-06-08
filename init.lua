@@ -1,24 +1,15 @@
-local original_listchars = vim.opt.listchars:get()
-
-vim.api.nvim_create_autocmd("ModeChanged", {
-    pattern = "*:[vV\22]*",
+-- In your init.lua
+vim.api.nvim_create_autocmd("VimEnter", {
     callback = function()
-        vim.opt_local.list = true
-
-        local chars = vim.deepcopy(original_listchars)
-        chars.space = "."
-        vim.opt_local.listchars = chars
+        if vim.fn.argc() == 0 then  -- only when no files are opened
+            vim.bo.buftype = "nofile"
+            vim.bo.bufhidden = "wipe"
+            vim.bo.swapfile = false
+            vim.api.nvim_buf_set_name(0, "**scratch**")
+        end
     end,
 })
 
-vim.api.nvim_create_autocmd("ModeChanged", {
-    pattern = "[vV\22]*:*",
-    callback = function()
-        vim.opt_local.listchars = original_listchars
-    end,
-})
---
---
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "markdown",
     callback = function()
@@ -37,7 +28,8 @@ vim.g.neovide_cursor_animation_length = 0.005
 vim.g.neovide_hide_mouse_when_typing = true
 
 
-vim.o.background = "light"
+-- vim.o.background = "light"
+vim.o.background = "dark"
 vim.opt.timeout = true
 vim.opt.timeoutlen = 50
 vim.opt.ttimeout = true
@@ -53,7 +45,7 @@ vim.opt.softtabstop = 4    -- Number of spaces a <Tab> counts for while editing
 vim.opt.showmode = false
 vim.opt.list = true
 vim.opt.smoothscroll = true
--- vim.opt.listchars:append({space = '.'})
+vim.opt.listchars:append({space = '.'})
 vim.opt.shortmess:append("FW")
 vim.opt.showcmd = false
 vim.opt.showtabline = 0
@@ -156,13 +148,13 @@ vim.pack.add({
     "https://github.com/nvim-neotest/nvim-nio",
     "https://github.com/theHamsta/nvim-dap-virtual-text",
     "https://github.com/catppuccin/nvim",
-    "https://github.com/nvim-lualine/lualine.nvim",
     "https://github.com/nvim-mini/mini.indentscope",
     "https://github.com/mellow-theme/mellow.nvim",
     "https://github.com/dgrco/deepwater.nvim",
     "https://github.com/m00qek/baleia.nvim",
-    -- "https://github.com/mvllow/modes.nvim",
     "https://github.com/ellisonleao/gruvbox.nvim",
+    "https://github.com/yorumicolors/yorumi.nvim",
+    "https://github.com/slugbyte/lackluster.nvim",
 
 })
 
@@ -173,39 +165,57 @@ vim.pack.add({
 -- require('boo-colorscheme').use({ theme = 'crimson_moonlight' })
 -- Default options:
 -- vim.cmd([[colorscheme deepwater]])
-require("gruvbox").setup({
-    terminal_colors = true, -- add neovim terminal colors
-    undercurl = true,
-    underline = true,
-    bold = true,
-    italic = {
-        strings = false,
-        emphasis = false,
-        comments = false,
-        operators = false,
-        folds = true,
+-- vim.cmd([[colorscheme yorumi]])
+vim.cmd([[colorscheme lackluster-night]])
+local lackluster = require("lackluster")
+lackluster.setup({
+    -- tweak_highlight allows you to update or overwrite the value passed into
+    -- vim.api.nvim_set_hl which allows you to have complete control over modifying all
+    -- highlights on a granular level.
+    tweak_highlight = {
+      -- modify @keyword's highlights to be bold and italic
+      ["@keyword"] = {
+        overwrite = false, -- overwrite falsey will extend/update lackluster's defaults (nil also does this)
+        bold = false,
+        italic = false,
+        -- see `:help nvim_set_hl` for all possible keys
+      },
+      -- overwrite @function to link to @keyword
+      ["@function"] = {
+        overwrite = true, -- overwrite == true will force overwrite lackluster's default highlights
+        link = "@keyword",
+      },
     },
-    strikethrough = true,
-    invert_selection = false,
-    invert_signs = false,
-    invert_tabline = false,
-    inverse = true, -- invert background for search, diffs, statuslines and errors
-    contrast = "soft", -- can be "hard", "soft" or empty string
-    palette_overrides = {
-        Normal = {bg = "#7c6f64"},
-        -- Whitespace = { fg = "#504945"},
-        -- SpecialKey = { bg = "#7c6f64" },
-    },
-    overrides = {},
-    dim_inactive = false,
-    transparent_mode = false,
 })
-vim.cmd([[colorscheme gruvbox]])
+
+require("lualine").setup({
+    options = {
+        theme = "lackluster",
+        -- This removes the mode indicator block on the far left
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
+    },
+    sections = {
+        lualine_a = {},
+        lualine_b = {
+            { "branch",      color = { bg = "#080808" } },
+            { "diff",        color = { bg = "#080808" } },
+            { "diagnostics", color = { bg = "#080808" } },
+        },
+        lualine_c = {
+            { "filename", color = { bg = "#2d2d2d", fg = "#ffffff" } },
+        },
+        lualine_x = { { "encoding",   color = { bg = "#080808" } } },
+        lualine_y = { { "progress",   color = { bg = "#080808" } } },
+        lualine_z = { { "location",   color = { bg = "#080808" } } },
+    },
+})
+-- vim.api.nvim_set_hl(0, "lualine_a_normal", { bg = "none", fg = "#ffffff" })
 
 -- Mode indicator: colors cursorline per mode, always bold
 local mode_colors = {
-    n        = "#f2e5bc",
-    i        = "#cc241d",
+    n        = "#080808",
+    i        = "#0B8F58",
     v        = "#9745be",
     V        = "#9745be",
     ["\22"]  = "#9745be",
@@ -213,7 +223,7 @@ local mode_colors = {
     c        = "#f5c359",
 }
 
-local line_opacity = 0.15
+local line_opacity = 0.10
 
 local function hex_to_rgb(hex)
     hex = hex:gsub("#", "")
@@ -236,11 +246,10 @@ local function get_bg()
     if hl.bg then
         return string.format("#%06x", hl.bg)
     end
-    return "#282828"
+    return "#000000"
 end
 
 vim.o.guicursor = "n-c:block-Cursor,i-ci-ve:block-CursorInsert,v-V:block-CursorVisual,r-cr:hor20-Cursor"
-
 local function update_cursorline()
     vim.schedule(function()
         local mode = vim.fn.mode()
@@ -248,10 +257,18 @@ local function update_cursorline()
         local opacity = (mode == "n") and 0 or line_opacity
         local blended = blend(color, get_bg(), opacity)
 
-        vim.api.nvim_set_hl(0, "CursorLine",   { bg = blended, bold = true })
-        vim.api.nvim_set_hl(0, "CursorLineNr", { bg = blended, bold = true })
-        vim.api.nvim_set_hl(0, "Cursor",       { bg = "#665c54", fg = "#f9f5d7" })
-        vim.api.nvim_set_hl(0, "CursorInsert", { bg = "#cc241d", fg = "#f9f5d7" })
+        -- Set global fallback (for normal mode / inactive windows)
+        vim.api.nvim_set_hl(0, "CursorLine",   { bg = "#000000" })
+        vim.api.nvim_set_hl(0, "CursorLineNr", { bg = "#080808", fg = "#7788AA" })
+
+        -- Set a per-window highlight only for the current window
+        vim.api.nvim_set_hl(0, "CursorLineActive",   { bg = blended, bold = true })
+        vim.api.nvim_set_hl(0, "CursorLineNrActive", { bg = blended, bold = true })
+
+        vim.wo.winhighlight = "CursorLine:CursorLineActive,CursorLineNr:CursorLineNrActive"
+
+        vim.api.nvim_set_hl(0, "Cursor",       { bg = "#cc241d", fg = "#f9f5d7" })
+        vim.api.nvim_set_hl(0, "CursorInsert", { bg = "#0B8F58", fg = "#ffffff" })
         vim.api.nvim_set_hl(0, "CursorVisual", { bg = "#9745be", fg = "#f9f5d7" })
 
         if mode == "v" or mode == "V" or mode == "\22" then
@@ -261,6 +278,13 @@ local function update_cursorline()
         end
     end)
 end
+
+-- Reset inactive windows when leaving them
+vim.api.nvim_create_autocmd("WinLeave", {
+    callback = function()
+        vim.wo.winhighlight = "CursorLine:CursorLine,CursorLineNr:CursorLineNr"
+    end,
+})
 
 update_cursorline()
 
@@ -278,16 +302,15 @@ vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
 })
 
 require("mini.icons").setup()
-require("lualine").setup()
 
 require('mini.indentscope').setup({
     draw = { delay = 50 },
     -- symbol = "│"
     symbol = "╎"
 })
-vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#bdae93", bg = 'NONE'})
-vim.api.nvim_set_hl(0, "Whitespace", { fg = "#504945"})
-vim.api.nvim_set_hl(0, "SpecialKey", { fg = "#bdae93"})
+vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#2a2a2a", bg = 'NONE'})
+vim.api.nvim_set_hl(0, "Whitespace", { fg = "#080808"})
+vim.api.nvim_set_hl(0, "SpecialKey", { fg = "#2a2a2a"})
 
 require("which-key").setup({ })
 require("mason").setup({ })
@@ -295,30 +318,33 @@ require("mason").setup({ })
 ---@module "compile-mode"
 ---@type CompileModeOpts
 vim.g.compile_mode = {
-    -- if you use something like `nvim-cmp` or `blink.cmp` for completion,
-    -- set this to fix tab completion in command mode:
     input_word_completion = true,
-
-    -- to add ANSI escape code support, add:
     baleia_setup = true,
-
-    -- to make `:Compile` replace special characters (e.g. `%`) in
-    -- the command (and behave more like `:!`), add:
     bang_expansion = true,
-
-    default_command = {
-        -- python = "python %",
-        -- lua = "lua %",
-        -- javascript = "bun %",
-        -- typescript = "bun %",
-        -- c = "cc -o %:r % && ./%:r",
-        -- cpp = "cc -std=c++23 -o %:r % && ./%:r",
-        -- java = "javac % && java %:r",
-        -- go = "go run %",
-        -- rust = "cargo run",
-    },
+    default_command = "make -k",
     focus_compilation_buffer = true,
 }
+
+-- Save the source window ID before we jump into the compilation buffer
+local source_win_id = nil
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "compilation",
+    callback = function()
+        source_win_id = vim.fn.win_getid(vim.fn.winnr("#"))
+
+        vim.keymap.set("n", "<CR>", function()
+            -- Switch back to source window first, then jump to error
+            if source_win_id and vim.api.nvim_win_is_valid(source_win_id) then
+                vim.api.nvim_set_current_win(source_win_id)
+            end
+            require("compile-mode").goto_error()
+        end, { buffer = true, desc = "Jump to error" })
+
+        vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = true, desc = "Close compilation buffer" })
+    end,
+})
+
 vim.keymap.set("n", "<leader>cr", ":below Compile<CR>")
 vim.keymap.set("n", "<leader>cc", ":below Recompile<CR>")
 vim.keymap.set("n", "<leader>cx", ":Trouble diagnostics toggle<CR>")
@@ -685,7 +711,6 @@ vim.diagnostic.config({
     virtual_text = true,
 })
 
--- vim.o.signcolumn = "auto"
 vim.keymap.set("n", "<leader>m", function()
     vim.diagnostic.open_float(nil, { focus = false })
 end, {desc = "View Diagnostics Error",
@@ -699,3 +724,20 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- vim.keymap.set('i', '<M-l>',       vim.lsp.buf.signature_help, { buffer = args.buf })
     end,
 })
+
+vim.g.terminal_color_0  = "#080808"  -- black       (gray1)
+vim.g.terminal_color_1  = "#D70000"  -- red
+vim.g.terminal_color_2  = "#789978"  -- green
+vim.g.terminal_color_3  = "#abab77"  -- yellow
+vim.g.terminal_color_4  = "#7788AA"  -- blue
+vim.g.terminal_color_5  = "#708090"  -- magenta     (lack)
+vim.g.terminal_color_6  = "#deeeed"  -- cyan        (luster)
+vim.g.terminal_color_7  = "#aaaaaa"  -- white       (gray7)
+vim.g.terminal_color_8  = "#2a2a2a"  -- bright black (gray3)
+vim.g.terminal_color_9  = "#ffaa88"  -- bright red  (orange)
+vim.g.terminal_color_10 = "#789978"  -- bright green
+vim.g.terminal_color_11 = "#abab77"  -- bright yellow
+vim.g.terminal_color_12 = "#7788AA"  -- bright blue
+vim.g.terminal_color_13 = "#708090"  -- bright magenta (lack)
+vim.g.terminal_color_14 = "#deeeed"  -- bright cyan (luster)
+vim.g.terminal_color_15 = "#DDDDDD"  -- bright white (gray9)
