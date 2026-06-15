@@ -80,6 +80,10 @@
       "rev": "ad19b1f02223391f3d40440f7ff10607f0043585",
       "src": "https://github.com/nvim-mini/mini.indentscope"
     },
+    "mini.notify": {
+      "rev": "7e75de73c60590e3f35d5cecd5677a68a437fc54",
+      "src": "https://github.com/nvim-mini/mini.notify"
+    },
     "modes.nvim": {
       "rev": "2badf8771dbb2d1e1066fd6a5dddaad2fc836e72",
       "src": "https://github.com/mvllow/modes.nvim"
@@ -128,6 +132,14 @@
       "rev": "54d4b5431e9634ee3d8d30784e017239b5b89d41",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
+    "snacks.nvim": {
+      "rev": "882c996cf28183f4d63640de0b4c02ec886d01f2",
+      "src": "https://github.com/folke/snacks.nvim"
+    },
+    "ultimate-autopair.nvim": {
+      "rev": "6b58234de921437836efe27714b2026ed2ee235a",
+      "src": "https://github.com/altermo/ultimate-autopair.nvim"
+    },
     "undotree": {
       "rev": "6fa6b57cda8459e1e4b2ca34df702f55242f4e4d",
       "src": "https://github.com/mbbill/undotree"
@@ -147,6 +159,10 @@
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
       "src": "https://github.com/folke/which-key.nvim"
+    },
+    "winshift.nvim": {
+      "rev": "37468ed6f385dfb50402368669766504c0e15583",
+      "src": "https://github.com/sindrets/winshift.nvim"
     },
     "yorumi.nvim": {
       "rev": "e5b93e2c0adb3d95ca9f3c5c20e824d15afcfe48",

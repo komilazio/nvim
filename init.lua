@@ -1,15 +1,3 @@
--- In your init.lua
-vim.api.nvim_create_autocmd("VimEnter", {
-    callback = function()
-        if vim.fn.argc() == 0 then  -- only when no files are opened
-            vim.bo.buftype = "nofile"
-            vim.bo.bufhidden = "wipe"
-            vim.bo.swapfile = false
-            vim.api.nvim_buf_set_name(0, "**scratch**")
-        end
-    end,
-})
-
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "markdown",
     callback = function()
@@ -17,6 +5,7 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.cmd("silent! TableModeEnable")
     end,
 })
+
 
 vim.keymap.set('n', '<C-=>', ":let g:neovide_scale_factor = g:neovide_scale_factor + 0.1<CR>")
 vim.keymap.set('n', '<C-->', ":let g:neovide_scale_factor = g:neovide_scale_factor - 0.1<CR>")
@@ -27,13 +16,13 @@ vim.g.neovide_cursor_animation_length = 0.005
 -- vim.g.neovide_cursor_vfx_mode = "railgun"
 vim.g.neovide_hide_mouse_when_typing = true
 
-
 -- vim.o.background = "light"
 vim.o.background = "dark"
 vim.opt.timeout = true
 vim.opt.timeoutlen = 50
 vim.opt.ttimeout = true
 vim.opt.ttimeoutlen = 1
+vim.opt.completeopt:append("popup")
 
 vim.g.mapleader = " "
 vim.o.winborder = "rounded"
@@ -45,7 +34,7 @@ vim.opt.softtabstop = 4    -- Number of spaces a <Tab> counts for while editing
 vim.opt.showmode = false
 vim.opt.list = true
 vim.opt.smoothscroll = true
-vim.opt.listchars:append({space = '.'})
+-- vim.opt.listchars:append({space = '.'})
 vim.opt.shortmess:append("FW")
 vim.opt.showcmd = false
 vim.opt.showtabline = 0
@@ -133,6 +122,7 @@ vim.pack.add({
     "https://github.com/folke/flash.nvim",
     "https://github.com/lambdalisue/vim-suda",
     "https://github.com/mason-org/mason.nvim",
+    "https://github.com/sindrets/winshift.nvim",
     "https://github.com/saghen/blink.cmp",
     "https://github.com/ibhagwan/fzf-lua",
     "https://github.com/stevearc/oil.nvim",
@@ -142,6 +132,7 @@ vim.pack.add({
     "https://github.com/MeanderingProgrammer/render-markdown.nvim",
     "https://github.com/dhruvasagar/vim-table-mode",
     "https://github.com/ej-shafran/compile-mode.nvim",
+    "https://github.com/altermo/ultimate-autopair.nvim",
     "https://github.com/mbbill/undotree",
     "https://codeberg.org/mfussenegger/nvim-dap",
     "https://github.com/rcarriga/nvim-dap-ui",
@@ -167,6 +158,9 @@ vim.pack.add({
 -- vim.cmd([[colorscheme deepwater]])
 -- vim.cmd([[colorscheme yorumi]])
 vim.cmd([[colorscheme lackluster-night]])
+
+require("ultimate-autopair").setup()
+
 local lackluster = require("lackluster")
 lackluster.setup({
     -- tweak_highlight allows you to update or overwrite the value passed into
@@ -187,6 +181,8 @@ lackluster.setup({
       },
     },
 })
+
+-- then continue with lackluster.setup, lualine, etc...
 
 require("lualine").setup({
     options = {
@@ -267,14 +263,17 @@ local function update_cursorline()
 
         vim.wo.winhighlight = "CursorLine:CursorLineActive,CursorLineNr:CursorLineNrActive"
 
-        vim.api.nvim_set_hl(0, "Cursor",       { bg = "#cc241d", fg = "#f9f5d7" })
-        vim.api.nvim_set_hl(0, "CursorInsert", { bg = "#0B8F58", fg = "#ffffff" })
-        vim.api.nvim_set_hl(0, "CursorVisual", { bg = "#9745be", fg = "#f9f5d7" })
+        -- vim.api.nvim_set_hl(0, "Cursor",       { bg = "#BE5D5D", fg = "#f9f5d7" })
+        -- vim.api.nvim_set_hl(0, "CursorInsert", { bg = "#0B8F58", fg = "#f9f5d7" })
+        -- vim.api.nvim_set_hl(0, "CursorVisual", { bg = "#9745be", fg = "#f9f5d7", bold = true })
+        vim.api.nvim_set_hl(0, "Cursor",       { bg = "#FFFFFF", fg = "#080808" })
+        vim.api.nvim_set_hl(0, "CursorInsert", { bg = "#0B8F58", fg = "#f9f5d7" })
+        vim.api.nvim_set_hl(0, "CursorVisual", { bg = "#9745be", fg = "#f9f5d7", bold = true })
 
         if mode == "v" or mode == "V" or mode == "\22" then
-            vim.api.nvim_set_hl(0, "Visual", { bg = blended })
+            vim.api.nvim_set_hl(0, "Visual", { bg = blended, bold = true })
         else
-            vim.api.nvim_set_hl(0, "Visual", { bg = "#504945" })
+            vim.api.nvim_set_hl(0, "Visual", { bg = "#504945", bold = true })
         end
     end)
 end
@@ -309,8 +308,6 @@ require('mini.indentscope').setup({
     symbol = "╎"
 })
 vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#2a2a2a", bg = 'NONE'})
-vim.api.nvim_set_hl(0, "Whitespace", { fg = "#080808"})
-vim.api.nvim_set_hl(0, "SpecialKey", { fg = "#2a2a2a"})
 
 require("which-key").setup({ })
 require("mason").setup({ })
@@ -347,8 +344,6 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.keymap.set("n", "<leader>cr", ":below Compile<CR>")
 vim.keymap.set("n", "<leader>cc", ":below Recompile<CR>")
-vim.keymap.set("n", "<leader>cx", ":Trouble diagnostics toggle<CR>")
-vim.keymap.set("n", "<leader>ct", ":!ctags -R .<CR>")
 
 require('render-markdown').setup({
     completions = { blink = { enabled = true } },
@@ -649,6 +644,7 @@ require("oil").setup({
         border = nil,
     },
 })
+
 vim.keymap.set("n", "<leader>e", "<cmd>Oil<CR>")
 
 -- Ensure terminals inherit current window cwd
@@ -721,8 +717,71 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set('n', '<leader>gd',  vim.lsp.buf.definition,     { buffer = args.buf })
         vim.keymap.set('n', '<leader>gD',  vim.lsp.buf.declaration,    { buffer = args.buf })
         vim.keymap.set('n', '<leader>gi',  vim.lsp.buf.implementation, { buffer = args.buf })
-        -- vim.keymap.set('i', '<M-l>',       vim.lsp.buf.signature_help, { buffer = args.buf })
+
+        -- Enable inlay hints for this buffer
+        vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+
+        -- Optional: toggle with a keymap
+        vim.keymap.set('n', '<leader>th', function()
+            vim.lsp.inlay_hint.enable(
+                not vim.lsp.inlay_hint.is_enabled({ bufnr = args.buf }),
+                { bufnr = args.buf }
+            )
+        end, { buffer = args.buf, desc = "Toggle inlay hints" })
     end,
+})
+vim.api.nvim_set_hl(0, "LspInlayHint", { bg = "#080808", fg = "#444444", italic = true })
+
+local function open_scratch()
+    vim.bo.buftype = "nofile"
+    vim.bo.bufhidden = "wipe"
+    vim.bo.swapfile = false
+    vim.api.nvim_buf_set_name(0, "**scratch**")
+
+    local ns = vim.api.nvim_create_namespace("scratch_hl")
+    vim.api.nvim_set_hl(ns, "Normal", { fg = "#708090" })
+    vim.api.nvim_set_hl(ns, "CursorLine",       { bg = "none" })
+    vim.api.nvim_win_set_hl_ns(0, ns)
+end
+
+vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+        if vim.fn.argc() == 0 then
+            open_scratch()
+        end
+    end,
+})
+
+vim.keymap.set("n", "<leader>88", function()
+    vim.cmd("enew")
+    open_scratch()
+end, { desc = "Open scratch buffer" })
+
+vim.api.nvim_set_hl(0, 'PERF',  { fg = '#595BBB', bold = false })
+vim.api.nvim_set_hl(0, 'NOTE',  { fg = '#7ED321', bold = false })
+vim.api.nvim_set_hl(0, 'FIXME', { fg = '#B4463A', bold = false })
+vim.api.nvim_set_hl(0, 'TODO',  { fg = '#F8E71C', bold = false })
+vim.api.nvim_set_hl(0, 'HACK',  { fg = '#BB59A8', bold = false })
+vim.api.nvim_set_hl(0, 'BUG',   { fg = '#EE0A02', bold = false })
+
+--TODO: this is a todo thing.
+--FIXME: just a temp soloution for now.
+--NOTE: this is a todo thing.
+--BUG: just a temp soloution for now.
+--PERF: this is a todo thing.
+--HACK: just a temp soloution for now.
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  -- group = "CrusxTheme",
+  pattern = "*",
+  callback = function()
+    vim.fn.matchadd('Perf', '\\<PERF\\>')
+    vim.fn.matchadd('Hack', '\\<HACK\\>')
+    vim.fn.matchadd('Note', '\\<NOTE\\>')
+    vim.fn.matchadd('Fixme', '\\<FIXME\\>')
+    vim.fn.matchadd('TODO', '\\<TODO\\>')
+    vim.fn.matchadd('Bug', '\\<BUG\\>')
+  end,
 })
 
 vim.g.terminal_color_0  = "#080808"  -- black       (gray1)
