@@ -45,9 +45,11 @@ vim.opt.termguicolors = true
 vim.opt.statuscolumn = "%s%l "
 vim.opt.number = true
 vim.opt.relativenumber = true
+vim.opt.showbreak = "↪ "
+
 -- vim.opt.virtualedit = "all"
 -- vim.opt.colorcolumn = "80"
-vim.opt.wrap = false
+vim.opt.wrap = true
 vim.opt.smartindent = true
 vim.g.rust_recommended_style = false
 vim.opt.hlsearch = true
@@ -87,6 +89,12 @@ vim.keymap.set("n", "<leader>kk", "<cmd>bdelete<CR>", { desc = "Kill/Delete Curr
 vim.keymap.set("n", "<leader>kc", "<cmd>close<CR>", { desc = "Close the current window", silent = true})
 vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv", { desc = "Move Block Down" })
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move Block Up" })
+vim.keymap.set('n', 'j', 'gj', { noremap = true })
+vim.keymap.set('n', 'k', 'gk', { noremap = true })
+vim.keymap.set('i', '<Down>', '<C-o>gj')
+vim.keymap.set('i', '<Up>', '<C-o>gk')
+
+
 
 vim.keymap.set("n", "<leader>0", function()
     vim.cmd("cd " .. vim.fn.expand("~"))
@@ -138,17 +146,22 @@ vim.pack.add({
     "https://github.com/rcarriga/nvim-dap-ui",
     "https://github.com/nvim-neotest/nvim-nio",
     "https://github.com/theHamsta/nvim-dap-virtual-text",
-    "https://github.com/catppuccin/nvim",
     "https://github.com/nvim-mini/mini.indentscope",
-    "https://github.com/mellow-theme/mellow.nvim",
-    "https://github.com/dgrco/deepwater.nvim",
     "https://github.com/m00qek/baleia.nvim",
-    "https://github.com/ellisonleao/gruvbox.nvim",
-    "https://github.com/yorumicolors/yorumi.nvim",
-    "https://github.com/slugbyte/lackluster.nvim",
+    "https://github.com//wnkz/monoglow.nvim",
 
 })
 
+
+vim.cmd([[colorscheme mid ]])
+-- vim.api.nvim_set_hl(0, "Normal", {bold = false})
+-- vim.api.nvim_set_hl(0, "MatchParen", {fg = "#fd1b7c", bold = true})
+-- vim.api.nvim_set_hl(0, "@variable", {fg = "#deeeed", bold = false})
+-- vim.api.nvim_set_hl(0, "@keyword", {fg = "#deeeed", bold = false})
+-- vim.api.nvim_set_hl(0, "Keyword", {fg = "#deeeed", bold = false})
+-- vim.api.nvim_set_hl(0, "Type", {fg = "#ffaa88", bold = false})
+-- vim.api.nvim_set_hl(0, "@function", {fg = "#deeeed", bold = false})
+-- vim.api.nvim_set_hl(0, "@propert", {fg = "#deeeed", bold = false})
 
 -- setup must be called before loading
 -- vim.cmd.colorscheme "crux"
@@ -157,36 +170,36 @@ vim.pack.add({
 -- Default options:
 -- vim.cmd([[colorscheme deepwater]])
 -- vim.cmd([[colorscheme yorumi]])
-vim.cmd([[colorscheme lackluster-night]])
+-- vim.cmd([[colorscheme lackluster-night]])
 
 require("ultimate-autopair").setup()
-
-local lackluster = require("lackluster")
-lackluster.setup({
-    -- tweak_highlight allows you to update or overwrite the value passed into
-    -- vim.api.nvim_set_hl which allows you to have complete control over modifying all
-    -- highlights on a granular level.
-    tweak_highlight = {
-      -- modify @keyword's highlights to be bold and italic
-      ["@keyword"] = {
-        overwrite = false, -- overwrite falsey will extend/update lackluster's defaults (nil also does this)
-        bold = false,
-        italic = false,
-        -- see `:help nvim_set_hl` for all possible keys
-      },
-      -- overwrite @function to link to @keyword
-      ["@function"] = {
-        overwrite = true, -- overwrite == true will force overwrite lackluster's default highlights
-        link = "@keyword",
-      },
-    },
-})
+--
+-- local lackluster = require("lackluster")
+-- lackluster.setup({
+--     -- tweak_highlight allows you to update or overwrite the value passed into
+--     -- vim.api.nvim_set_hl which allows you to have complete control over modifying all
+--     -- highlights on a granular level.
+--     tweak_highlight = {
+--       -- modify @keyword's highlights to be bold and italic
+--       ["@keyword"] = {
+--         overwrite = false, -- overwrite falsey will extend/update lackluster's defaults (nil also does this)
+--         bold = false,
+--         italic = false,
+--         -- see `:help nvim_set_hl` for all possible keys
+--       },
+--       -- overwrite @function to link to @keyword
+--       ["@function"] = {
+--         overwrite = true, -- overwrite == true will force overwrite lackluster's default highlights
+--         link = "@keyword",
+--       },
+--     },
+-- })
 
 -- then continue with lackluster.setup, lualine, etc...
 
 require("lualine").setup({
     options = {
-        theme = "lackluster",
+        theme = "monoglow",
         -- This removes the mode indicator block on the far left
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
@@ -210,11 +223,11 @@ require("lualine").setup({
 
 -- Mode indicator: colors cursorline per mode, always bold
 local mode_colors = {
-    n        = "#080808",
+    n        = "#1B1B1B",
     i        = "#0B8F58",
-    v        = "#9745be",
-    V        = "#9745be",
-    ["\22"]  = "#9745be",
+    v        = "#C561F5",
+    V        = "#C561F5",
+    ["\22"]  = "#C561F5",
     R        = "#245361",
     c        = "#f5c359",
 }
@@ -242,7 +255,7 @@ local function get_bg()
     if hl.bg then
         return string.format("#%06x", hl.bg)
     end
-    return "#000000"
+    return "#1B1B1B"
 end
 
 vim.o.guicursor = "n-c:block-Cursor,i-ci-ve:block-CursorInsert,v-V:block-CursorVisual,r-cr:hor20-Cursor"
@@ -254,26 +267,26 @@ local function update_cursorline()
         local blended = blend(color, get_bg(), opacity)
 
         -- Set global fallback (for normal mode / inactive windows)
-        vim.api.nvim_set_hl(0, "CursorLine",   { bg = "#000000" })
+        vim.api.nvim_set_hl(0, "CursorLine",   { bg = "#1B1B1B" })
         vim.api.nvim_set_hl(0, "CursorLineNr", { bg = "#080808", fg = "#7788AA" })
 
         -- Set a per-window highlight only for the current window
-        vim.api.nvim_set_hl(0, "CursorLineActive",   { bg = blended, bold = true })
-        vim.api.nvim_set_hl(0, "CursorLineNrActive", { bg = blended, bold = true })
+        vim.api.nvim_set_hl(0, "CursorLineActive",   { bg = blended, bold = false })
+        vim.api.nvim_set_hl(0, "CursorLineNrActive", { bg = blended, bold = false })
 
         vim.wo.winhighlight = "CursorLine:CursorLineActive,CursorLineNr:CursorLineNrActive"
 
-        -- vim.api.nvim_set_hl(0, "Cursor",       { bg = "#BE5D5D", fg = "#f9f5d7" })
+        vim.api.nvim_set_hl(0, "Cursor",       { bg = "#BBD11D", fg = "#000000" })
         -- vim.api.nvim_set_hl(0, "CursorInsert", { bg = "#0B8F58", fg = "#f9f5d7" })
         -- vim.api.nvim_set_hl(0, "CursorVisual", { bg = "#9745be", fg = "#f9f5d7", bold = true })
-        vim.api.nvim_set_hl(0, "Cursor",       { bg = "#FFFFFF", fg = "#080808" })
+        -- vim.api.nvim_set_hl(0, "Cursor",       { bg = "#FFFFFF", fg = "#080808" })
         vim.api.nvim_set_hl(0, "CursorInsert", { bg = "#0B8F58", fg = "#f9f5d7" })
-        vim.api.nvim_set_hl(0, "CursorVisual", { bg = "#9745be", fg = "#f9f5d7", bold = true })
+        vim.api.nvim_set_hl(0, "CursorVisual", { bg = "#9C06E4", fg = "#ffffff", bold = true })
 
         if mode == "v" or mode == "V" or mode == "\22" then
-            vim.api.nvim_set_hl(0, "Visual", { bg = blended, bold = true })
+            vim.api.nvim_set_hl(0, "Visual", { bg = blended, bold = false })
         else
-            vim.api.nvim_set_hl(0, "Visual", { bg = "#504945", bold = true })
+            vim.api.nvim_set_hl(0, "Visual", { bg = "#504945", bold = false })
         end
     end)
 end
@@ -757,46 +770,3 @@ vim.keymap.set("n", "<leader>88", function()
     open_scratch()
 end, { desc = "Open scratch buffer" })
 
-vim.api.nvim_set_hl(0, 'PERF',  { fg = '#595BBB', bold = false })
-vim.api.nvim_set_hl(0, 'NOTE',  { fg = '#7ED321', bold = false })
-vim.api.nvim_set_hl(0, 'FIXME', { fg = '#B4463A', bold = false })
-vim.api.nvim_set_hl(0, 'TODO',  { fg = '#F8E71C', bold = false })
-vim.api.nvim_set_hl(0, 'HACK',  { fg = '#BB59A8', bold = false })
-vim.api.nvim_set_hl(0, 'BUG',   { fg = '#EE0A02', bold = false })
-
---TODO: this is a todo thing.
---FIXME: just a temp soloution for now.
---NOTE: this is a todo thing.
---BUG: just a temp soloution for now.
---PERF: this is a todo thing.
---HACK: just a temp soloution for now.
-
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-  -- group = "CrusxTheme",
-  pattern = "*",
-  callback = function()
-    vim.fn.matchadd('Perf', '\\<PERF\\>')
-    vim.fn.matchadd('Hack', '\\<HACK\\>')
-    vim.fn.matchadd('Note', '\\<NOTE\\>')
-    vim.fn.matchadd('Fixme', '\\<FIXME\\>')
-    vim.fn.matchadd('TODO', '\\<TODO\\>')
-    vim.fn.matchadd('Bug', '\\<BUG\\>')
-  end,
-})
-
-vim.g.terminal_color_0  = "#080808"  -- black       (gray1)
-vim.g.terminal_color_1  = "#D70000"  -- red
-vim.g.terminal_color_2  = "#789978"  -- green
-vim.g.terminal_color_3  = "#abab77"  -- yellow
-vim.g.terminal_color_4  = "#7788AA"  -- blue
-vim.g.terminal_color_5  = "#708090"  -- magenta     (lack)
-vim.g.terminal_color_6  = "#deeeed"  -- cyan        (luster)
-vim.g.terminal_color_7  = "#aaaaaa"  -- white       (gray7)
-vim.g.terminal_color_8  = "#2a2a2a"  -- bright black (gray3)
-vim.g.terminal_color_9  = "#ffaa88"  -- bright red  (orange)
-vim.g.terminal_color_10 = "#789978"  -- bright green
-vim.g.terminal_color_11 = "#abab77"  -- bright yellow
-vim.g.terminal_color_12 = "#7788AA"  -- bright blue
-vim.g.terminal_color_13 = "#708090"  -- bright magenta (lack)
-vim.g.terminal_color_14 = "#deeeed"  -- bright cyan (luster)
-vim.g.terminal_color_15 = "#DDDDDD"  -- bright white (gray9)

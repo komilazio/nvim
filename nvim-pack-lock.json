@@ -44,6 +44,10 @@
       "rev": "65c848961e66de995052ead60970fbde101ff18f",
       "src": "https://github.com/ibhagwan/fzf-lua"
     },
+    "grayveil.nvim": {
+      "rev": "e4f761019aedc3b35cb1ac01c38f64ea94e129da",
+      "src": "https://github.com/ZhiWei-Ou/grayveil.nvim"
+    },
     "gruvbox.nvim": {
       "rev": "154eb5ff5b96d0641307113fa385eaf0d36d9796",
       "src": "https://github.com/ellisonleao/gruvbox.nvim"
@@ -87,6 +91,10 @@
     "modes.nvim": {
       "rev": "2badf8771dbb2d1e1066fd6a5dddaad2fc836e72",
       "src": "https://github.com/mvllow/modes.nvim"
+    },
+    "monoglow.nvim": {
+      "rev": "a249b1f55bfe9171e2f8aff7acf140f78ca4b2bb",
+      "src": "https://github.com//wnkz/monoglow.nvim"
     },
     "neovim-ayu": {
       "rev": "e5a9f0fa2918d6b5f57c21b3ac014314ee5e41c8",
